@@ -1,47 +1,48 @@
 --[[
-Title: Py2Lua
+Title: PyTranspiler Mod
 Author(s): DreamAndDead
 Date: 2019/09/27
-Desc: python script to lua script mod
+Desc: pycode to luacode mod
 use the lib:
 ------------------------------------------------------------
-NPL.load("(gl)Mod/Py2Lua/main.lua");
+NPL.load("(gl)Mod/PyTranspiler/main.lua");
 ------------------------------------------------------------
 ]]
-local Py2Lua = commonlib.inherit(commonlib.gettable("Mod.ModBase"), commonlib.gettable("Mod.Py2Lua"));
 
-function Py2Lua:ctor()
+local PyTranspiler = commonlib.inherit(commonlib.gettable("Mod.ModBase"), commonlib.gettable("Mod.PyTranspiler"))
+
+function PyTranspiler:ctor()
 end
 
 -- virtual function get mod name
-function Py2Lua:GetName()
-	return "Py2Lua"
+function PyTranspiler:GetName()
+	return "PyTranspiler"
 end
 
 -- virtual function get mod description 
-function Py2Lua:GetDesc()
-	return "Py2Lua is a plugin in paracraft"
+function PyTranspiler:GetDesc()
+	return "PyTranspiler is a plugin to transpile pycode to luacode in paracraft"
 end
 
-function Py2Lua:init()
-	LOG.std(nil, "info", "Py2Lua", "plugin initialized");
+function PyTranspiler:init()
+	LOG.std(nil, "info", "PyTranspiler", "plugin initialized")
 end
 
-function Py2Lua:OnLogin()
+function PyTranspiler:OnLogin()
 end
 
 -- called when a new world is loaded. 
-function Py2Lua:OnWorldLoad()
+function PyTranspiler:OnWorldLoad()
 end
 
 -- called when a world is unloaded. 
-function Py2Lua:OnLeaveWorld()
+function PyTranspiler:OnLeaveWorld()
 end
 
-function Py2Lua:OnDestroy()
+function PyTranspiler:OnDestroy()
 end
 
-function Py2Lua.LoadPlugin(callback)
+function PyTranspiler.LoadPlugin(callback)
     callback(true)
 end
 

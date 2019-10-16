@@ -41,6 +41,10 @@ function Transpiler:transpile(pycode)
     end
 
     local res = ParaGlobal.ExecuteFilter(py2lua_exe, pycode)
+    if res == nil then
+        return nil, "found error in ParaGlobal.ExecuteFilter, please check the log"
+    end
+
     local exit_code = res["exit_code"]
     local output = res["output"]
 

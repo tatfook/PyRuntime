@@ -18,6 +18,7 @@ local Transpiler = NPL.export()
 --[[
     params:
     - pycode
+
     returns:
     - luacode
     - error_msg
@@ -39,8 +40,15 @@ function Transpiler:transpile(pycode)
         return nil, "ParaGlobal.ExecuteFilter not found in NPL Runtime"
     end
 
-    local luacode = ParaGlobal.ExecuteFilter(py2lua_exe, pycode)
-    return luacode
+    local res = ParaGlobal.ExecuteFilter(py2lua_exe, pycode)
+    local exit_code = res["exit_code"]
+    local output = res["output"]
+
+    if exit_code == 0 then
+        return output, nil
+    else
+        return nil, output
+    end
 end
 
 function Transpiler:OsSupported()

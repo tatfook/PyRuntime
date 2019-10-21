@@ -1,19 +1,20 @@
 --[[
-Title: Python Transpiler
+Title: PyRuntime Transpiler
 Author(s): DreamAndDead
 Date: 2019/09/29
 Desc: Call external py2lua.exe to tranpile pycode to luacode
 use the lib:
 ------------------------------------------------------------
 local transpiler = NPL.load("Mod/PyRuntime/Transpiler.lua")
-local luacode, error_msg = transpiler:transpile(py_code, function(res)
+transpiler:transpile(py_code, function(res)
     local lua_code = res["lua_code"]
     if lua_code == nil then
-        -- handle error
+        -- handle error message
         print(res["error_msg"])
     end
 
     -- deal with lua_code
+    print(lua_code)
 end)
 ------------------------------------------------------------
 --]]
@@ -35,7 +36,7 @@ function Transpiler:transpile(py_code, callback)
 
     Transpiler.callback = callback
 
-    NPL.activate("plugins/ExeLoader_d.dll", {
+    NPL.activate("plugins/ExeLoader.dll", {
         exe_path = py2lua_exe,
         input = py_code,
         callback = "Mod/PyRuntime/Transpiler.lua"
@@ -75,36 +76,3 @@ local function activate()
 end
 
 NPL.this(activate)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@
 Title: PyRuntime Mod
 Author(s): DreamAndDead
 Date: 2019/09/27
-Desc: pycode to luacode mod
+Desc: running pycode in npl by transpiling
 use the lib:
 ------------------------------------------------------------
 NPL.load("Mod/PyRuntime/main.lua");
@@ -21,7 +21,7 @@ end
 
 -- virtual function get mod description 
 function PyRuntime:GetDesc()
-	return "PyRuntime is a plugin to transpile pycode to luacode in paracraft"
+	return "PyRuntime is a plugin for running pycode in npl by transpiling"
 end
 
 function PyRuntime:init()

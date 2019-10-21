@@ -24,7 +24,11 @@ local Transpiler = NPL.export()
 function Transpiler:transpile(py_code, callback)
     if not Transpiler:OsSupported() then
         local error_msg = "PyRuntime Mod isn't supported on " .. System.os.GetPlatform() .. " platform"
-        return nil, error_msg
+        callback({
+            lua_code = nil,
+            error_msg = error_msg
+        })
+        return
     end
 
     local app_root = ParaIO.GetCurDirectory(0)
@@ -32,11 +36,19 @@ function Transpiler:transpile(py_code, callback)
     local exe_loader_dll = app_root .. "plugins/ExeLoader.dll"
 
     if not ParaIO.DoesFileExist(py2lua_exe) then
-        return nil, "py2lua.exe not found in plugins directory"
+        callback({
+            lua_code = nil,
+            error_msg = "py2lua.exe not found in plugins directory"
+        })
+        return
     end
 
     if not ParaIO.DoesFileExist(exe_loader_dll) then
-        return nil, "ExeLoader.dll not found in plugins directory, please install ExeLoader Mod"
+        callback({
+            lua_code = nil,
+            error_msg = "ExeLoader.dll not found in plugins directory, please install ExeLoader mod"
+        })
+        return
     end
 
     Transpiler.callback = callback

@@ -29,14 +29,19 @@ function Transpiler:transpile(py_code, callback)
 
     local app_root = ParaIO.GetCurDirectory(0)
     local py2lua_exe = app_root .. "plugins/py2lua.exe"
+    local exe_loader_dll = app_root .. "plugins/ExeLoader.dll"
 
     if not ParaIO.DoesFileExist(py2lua_exe) then
         return nil, "py2lua.exe not found in plugins directory"
     end
 
+    if not ParaIO.DoesFileExist(exe_loader_dll) then
+        return nil, "ExeLoader.dll not found in plugins directory, please install ExeLoader Mod"
+    end
+
     Transpiler.callback = callback
 
-    NPL.activate("plugins/ExeLoader.dll", {
+    NPL.activate(exe_loader_dll, {
         exe_path = py2lua_exe,
         input = py_code,
         callback = "Mod/PyRuntime/Transpiler.lua"

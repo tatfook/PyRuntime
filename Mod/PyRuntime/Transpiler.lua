@@ -33,7 +33,8 @@ function Transpiler:transpile(py_code, callback)
 
     local app_root = ParaIO.GetCurDirectory(0)
     local py2lua_exe = app_root .. "plugins/py2lua.exe"
-    local exe_loader_dll = app_root .. "plugins/ExeLoader.dll"
+    local exe_loader_rel_path = "plugins/ExeLoader.dll"
+    local exe_loader_abs_path = app_root .. exe_loader_rel_path
 
     if not ParaIO.DoesFileExist(py2lua_exe) then
         callback({
@@ -43,7 +44,7 @@ function Transpiler:transpile(py_code, callback)
         return
     end
 
-    if not ParaIO.DoesFileExist(exe_loader_dll) then
+    if not ParaIO.DoesFileExist(exe_loader_abs_path) then
         callback({
             lua_code = nil,
             error_msg = "ExeLoader.dll not found in plugins directory, please install ExeLoader mod"
@@ -53,7 +54,7 @@ function Transpiler:transpile(py_code, callback)
 
     Transpiler.callback = callback
 
-    NPL.activate(exe_loader_dll, {
+    NPL.activate(exe_loader_rel_path, {
         exe_path = py2lua_exe,
         input = py_code,
         callback = "Mod/PyRuntime/Transpiler.lua"
@@ -68,7 +69,7 @@ end
 local function activate()
     if msg then
         local runtime_error = msg["runtime_error"]
-        local exe_error = msg["exe_error"]
+        local exit_code = msg["exit_code"]
         local output = msg["output"]
 
         if runtime_error then
@@ -77,7 +78,7 @@ local function activate()
                 error_msg = "Dll runtime error happens, please check the log"
             })
         else
-            if exe_error then
+            if exit_code ~= 0 then
                 Transpiler.callback({
                     lua_code = nil,
                     error_msg = output

@@ -4,7 +4,7 @@
 
 ## 支持语言版本
 
-针对 python 3 版本，支持 feature 列表可参考 https://github.com/tatfook/py2lua
+针对 python 3 版本，支持 feature 列表可参考 https://github.com/tatfook/py2lua/blob/master/doc/features.md
 
 ## usage
 

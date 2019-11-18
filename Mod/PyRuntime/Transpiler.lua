@@ -61,6 +61,33 @@ function Transpiler:transpile(py_code, callback)
     })
 end
 
+function Transpiler:run(py_code, fenv, callback)
+    self:tranpile(py_code, function(res)
+        local lua_code = res["lua_code"]
+        local error_msg = res["error_msg"]
+        if lua_code == nil then
+            callback({
+                lua_code_obj = code_obj,
+                error_msg = error_msg
+            })
+        end
+    
+        local code_obj, error_msg = loadstring(lua_code)
+        
+        if code_obj ~= nil then
+            local py_env = {}
+            setmetatable(py_env, {__index = fenv})
+            setfenv(code_obj, py_env)
+        end
+        
+        callback({
+            lua_code_obj = code_obj,
+            error_msg = error_msg
+        })
+    end)
+end
+
+
 function Transpiler:OsSupported()
     local is_supported = (System.os.GetPlatform() == "win32")
     return is_supported;

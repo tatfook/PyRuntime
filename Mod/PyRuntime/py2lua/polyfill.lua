@@ -2021,3 +2021,6 @@ function zip(iter1, ...)
    return res
 end
 
+return {
+   bit = bit,
+}

@@ -6,6 +6,7 @@ Desc: Call external py2lua.exe to tranpile pycode to luacode
 use the lib:
 ------------------------------------------------------------
 local transpiler = NPL.load("Mod/PyRuntime/Transpiler.lua")
+
 transpiler:transpile(py_code, function(res)
     local lua_code = res["lua_code"]
     if lua_code == nil then
@@ -16,6 +17,8 @@ transpiler:transpile(py_code, function(res)
     -- deal with lua_code
     print(lua_code)
 end)
+
+transpiler:run(py_code, _G)
 ------------------------------------------------------------
 --]]
 
@@ -62,28 +65,29 @@ function Transpiler:transpile(py_code, callback)
 end
 
 function Transpiler:run(py_code, fenv, callback)
-    self:tranpile(py_code, function(res)
+    self:transpile(py_code, function(res)
         local lua_code = res["lua_code"]
-        local error_msg = res["error_msg"]
         if lua_code == nil then
-            callback({
-                lua_code_obj = code_obj,
-                error_msg = error_msg
-            })
+            LOG.std(nil, "error", "PyRuntime", "transpile error: " .. res["error_msg"])
+            return
         end
     
         local code_obj, error_msg = loadstring(lua_code)
         
-        if code_obj ~= nil then
-            local py_env = {}
-            setmetatable(py_env, {__index = fenv})
-            setfenv(code_obj, py_env)
+        if code_obj == nil then
+            LOG.std(nil, "error", "PyRuntime", "compile transpiled lua code error: " .. error_msg)
+            return
         end
-        
-        callback({
-            lua_code_obj = code_obj,
-            error_msg = error_msg
-        })
+
+        local py_env, env_error_msg = NPL.load("Mod/PyRuntime/py2lua/polyfill.lua")
+        if py_env == nil then
+            LOG.std(nil, "error", "PyRuntime", "compile polyfill lua code error: " .. env_error_msg)
+            return
+        end
+
+        setmetatable(py_env, {__index = fenv or {}})
+        setfenv(code_obj, py_env)
+        code_obj()
     end)
 end
 

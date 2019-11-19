@@ -16,6 +16,8 @@ $ git clone https://github.com/tatfook/PyRuntime
 
 在代码中使用 PyRuntime
 
+**tranpile**
+
 ```lua
 local pyruntime = NPL.load("Mod/PyRuntime/Transpiler.lua")
 pyruntime:transpile("b = 3", function(res)
@@ -34,6 +36,19 @@ end)
 
 ```
 local b = 3
+```
+
+**run**
+
+```lua
+local pyruntime = NPL.load("Mod/PyRuntime/Transpiler.lua")
+pyruntime:run("print(3)", _G)
+```
+
+示例结果
+
+```
+3
 ```
 
 ## error handling

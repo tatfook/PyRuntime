@@ -48,6 +48,7 @@ PYTHON=python3
 LUA=lua5.1
 TEST_FOLDER=./codeblock/
 pylua=./py2lua.py
+luatest=./run_test.lua
 
 pyfile_path=$1
 
@@ -57,16 +58,15 @@ function test_pyfile()
     pyluafile=$pyfile.lua
     echocyan "test python file $pyfile"
 
-    echo "dofile('./polyfill/pypolyfill.lua')" > $pyluafile
-    $PYTHON $pylua < $pyfile >> $pyluafile
+    $PYTHON $pylua < $pyfile > $pyluafile
 
     $PYTHON $pyfile
     py_exit=$?
     
-    $LUA $pyluafile
+    $LUA $luatest $pyluafile
     lua_exit=$?
 
-    if [[ $py_exit -eq 0 ]] && [[ $lua_exit -eq 0 ]]; then
+    if [[ $py_it -eq 0 ]] && [[ $lua_exit -eq 0 ]]; then
 	echogreen "success"
     else
 	echored "fail"
@@ -79,8 +79,6 @@ function test_pyfile()
     if [[ $lua_exit -ne 0 ]]; then
 	cat -n $pyluafile
     fi
-
-    echo
 }
 
 if [[ "$pyfile_path" == "" ]]; then

@@ -64,7 +64,7 @@ function Transpiler:transpile(py_code, callback)
     })
 end
 
-function Transpiler:run(py_code, fenv, callback)
+function Transpiler:run(py_code, fenv)
     self:transpile(py_code, function(res)
         local lua_code = res["lua_code"]
         if lua_code == nil then

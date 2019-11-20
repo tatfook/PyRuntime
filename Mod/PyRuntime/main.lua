@@ -26,6 +26,32 @@ end
 
 function PyRuntime:init()
 	LOG.std(nil, "info", "PyRuntime", "plugin initialized")
+
+    -- register a new block item, id < 10512 is internal items, which is not recommended to modify. 
+	GameLogic.GetFilters():add_filter("block_types", function(xmlRoot) 
+		local blocks = commonlib.XPath.selectNode(xmlRoot, "/blocks/");
+		if(blocks) then
+            -- NPL CAD v2.0 with Code Block
+			NPL.load("(gl)Mod/PyRuntime/ItemPyRuntimeCodeBlock.lua");
+			blocks[#blocks+1] = {name="block", attr={ name="PyRuntimeCodeBlock",
+				id = 10515, item_class="ItemPyRuntimeCodeBlock", text=L"PyRuntimeCodeBlock",
+				icon = "Mod/PyRuntime/textures/icon.png",
+			}}
+			LOG.std(nil, "info", "PyRuntime", "PyRuntime is registered");
+
+		end
+		return xmlRoot;
+	end)
+
+	-- add block to category list to be displayed in builder window (E key)
+	GameLogic.GetFilters():add_filter("block_list", function(xmlRoot) 
+		for node in commonlib.XPath.eachNode(xmlRoot, "/blocklist/category") do
+			if(node.attr.name == "tool" or node.attr.name == "character") then
+				node[#node+1] = {name="block", attr={name="PyRuntimeCodeBlock"} };
+			end
+		end
+		return xmlRoot;
+	end)
 end
 
 function PyRuntime:OnLogin()

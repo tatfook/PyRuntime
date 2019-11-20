@@ -34,7 +34,7 @@ function PyRuntime:init()
             -- NPL CAD v2.0 with Code Block
 			NPL.load("(gl)Mod/PyRuntime/ItemPyRuntimeCodeBlock.lua");
 			blocks[#blocks+1] = {name="block", attr={ name="PyRuntimeCodeBlock",
-				id = 10515, item_class="ItemPyRuntimeCodeBlock", text=L"PyRuntimeCodeBlock",
+				id = 10516, item_class="ItemPyRuntimeCodeBlock", text=L"PyRuntimeCodeBlock",
 				icon = "Mod/PyRuntime/textures/icon.png",
 			}}
 			LOG.std(nil, "info", "PyRuntime", "PyRuntime is registered");

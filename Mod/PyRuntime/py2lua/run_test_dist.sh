@@ -3,7 +3,7 @@
 PYTHON=python3
 LUA=lua5.1
 TEST_FOLDER=./codeblock/
-pylua=./py2lua.py
+pylua=./dist/py2lua
 luatest=./run_test.lua
 
 pyfile_path=$1
@@ -14,7 +14,7 @@ function test_pyfile()
     pyluafile=$pyfile.lua
     echo "test python file $pyfile"
 
-    $PYTHON $pylua < $pyfile > $pyluafile
+    $pylua < $pyfile > $pyluafile
 
     $PYTHON $pyfile
     py_exit=$?

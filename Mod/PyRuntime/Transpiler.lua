@@ -57,13 +57,22 @@ function Transpiler:transpile(py_code, callback)
 
     Transpiler.callback = callback
 
-    NPL.activate(exe_loader_rel_path, {
+    NPL.call(exe_loader_rel_path, {
         exe_path = py2lua_exe,
         input = py_code,
         callback = "Mod/PyRuntime/Transpiler.lua"
     })
 end
 
+function Transpiler:installMethods(codeAPI, pyAPIs)
+    for func_name, func in pairs(pyAPIs) do
+		if(type(func_name) == "string" and type(func) == "function") then
+			codeAPI[func_name] = function(...)
+				return func(...);
+			end
+		end
+	end
+end
 function Transpiler:run(py_code, fenv)
     self:transpile(py_code, function(res)
         local lua_code = res["lua_code"]

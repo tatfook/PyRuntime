@@ -11,12 +11,12 @@ from pythonlua.polyfill import polyfill
 def main():
     """Entry point function to the translator"""
     content = sys.stdin.read()
-#    content = open('unsupported.txt').read()
     translator = Translator()
     error, result = translator.translate(content)
 
     exit_code = 1 if error else 0
-    print(result)
+    sys.stdout.write(result)
+    sys.stdout.flush()
 
     return exit_code
 

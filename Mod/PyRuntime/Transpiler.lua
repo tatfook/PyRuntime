@@ -57,11 +57,27 @@ function Transpiler:transpile(py_code, callback)
 
     Transpiler.callback = callback
 
-    NPL.call(exe_loader_rel_path, {
+    local http_post = System.os.GetUrl
+    
+    http_post(
+        {
+            url = url,
+            headers = {
+                ['User-Agent'] = agent,
+                ['Content-Type'] = 'application/x-www-form-urlencoded',
+            },
+            postfields = payload,
+        },
+    -- ParaGlobal.ExecuteFilter(py2lua_exe, py_code, function(c) print(c) end)
+
+--[[
+    NPL.activate(exe_loader_rel_path, {
         exe_path = py2lua_exe,
         input = py_code,
         callback = "Mod/PyRuntime/Transpiler.lua"
     })
+    
+]]
 end
 
 function Transpiler:installMethods(codeAPI, pyAPIs)
@@ -73,33 +89,6 @@ function Transpiler:installMethods(codeAPI, pyAPIs)
 		end
 	end
 end
-function Transpiler:run(py_code, fenv)
-    self:transpile(py_code, function(res)
-        local lua_code = res["lua_code"]
-        if lua_code == nil then
-            LOG.std(nil, "error", "PyRuntime", "transpile error: " .. res["error_msg"])
-            return
-        end
-    
-        local code_obj, error_msg = loadstring(lua_code)
-        
-        if code_obj == nil then
-            LOG.std(nil, "error", "PyRuntime", "compile transpiled lua code error: " .. error_msg)
-            return
-        end
-
-        local py_env, env_error_msg = NPL.load("Mod/PyRuntime/py2lua/polyfill.lua")
-        if py_env == nil then
-            LOG.std(nil, "error", "PyRuntime", "compile polyfill lua code error: " .. env_error_msg)
-            return
-        end
-
-        setmetatable(py_env, {__index = fenv or {}})
-        setfenv(code_obj, py_env)
-        code_obj()
-    end)
-end
-
 
 function Transpiler:OsSupported()
     local is_supported = (System.os.GetPlatform() == "win32")

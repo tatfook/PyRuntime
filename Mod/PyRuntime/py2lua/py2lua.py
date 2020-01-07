@@ -2,18 +2,18 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
-import json
+import json, argparse
 
 from pythonlua.translator import Translator
 
 class handler(BaseHTTPRequestHandler):
     """
-    post json
+    request json
     {
         "pycode": pycode
     }
-
-    res json
+    -------------------------------------------
+    response json
     {
         "error": true/false,
         "luacode": luacode/error_msg
@@ -46,9 +46,18 @@ class handler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """handle requests in a seperate thread."""
 
+def get_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--addr', type=str, default='127.0.0.1', help='serve listen address')
+    parser.add_argument('--port', type=int, default=8000, help='serve listen port')
+    return parser
 
 if __name__ == '__main__':
-    port = 8080
-    server = ThreadedHTTPServer(('localhost', port), handler)
-    print('start server at port %d, use <Ctrl-C> to stop' % port)
+    parser = get_parser()
+    args = parser.parse_args()
+    addr = args.addr
+    port = args.port
+
+    server = ThreadedHTTPServer((addr, port), handler)
+    print('start server at %s:%d, use <Ctrl-C> to stop' % (addr, port))
     server.serve_forever()

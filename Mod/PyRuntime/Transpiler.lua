@@ -22,62 +22,25 @@ transpiler:run(py_code, _G)
 ------------------------------------------------------------
 --]]
 
+local http_post = System.os.GetUrl
+
 local Transpiler = NPL.export()
 
-function Transpiler:transpile(py_code, callback)
-    if not Transpiler:OsSupported() then
-        local error_msg = "PyRuntime Mod isn't supported on " .. System.os.GetPlatform() .. " platform"
-        callback({
-            lua_code = nil,
-            error_msg = error_msg
-        })
-        return
-    end
+function Transpiler:transpile(pycode)
+    local err, msg, data = http_post({
+            url='http://127.0.0.1:8080',
+            method = 'POST',
+            json = true,
+            form = {
+                pycode = pycode
+            }
+        }
+    )
+        
+    local error = data['error']
+    local luacode = data['luacode']
 
-    local app_root = ParaIO.GetCurDirectory(0)
-    local py2lua_exe = app_root .. "plugins/py2lua.exe"
-    local exe_loader_rel_path = "plugins/ExeLoader.dll"
-    local exe_loader_abs_path = app_root .. exe_loader_rel_path
-
-    if not ParaIO.DoesFileExist(py2lua_exe) then
-        callback({
-            lua_code = nil,
-            error_msg = "py2lua.exe not found in plugins directory"
-        })
-        return
-    end
-
-    if not ParaIO.DoesFileExist(exe_loader_abs_path) then
-        callback({
-            lua_code = nil,
-            error_msg = "ExeLoader.dll not found in plugins directory, please install ExeLoader mod"
-        })
-        return
-    end
-
-    Transpiler.callback = callback
-
-    local http_post = System.os.GetUrl
-    
-    http_post(
-        {
-            url = url,
-            headers = {
-                ['User-Agent'] = agent,
-                ['Content-Type'] = 'application/x-www-form-urlencoded',
-            },
-            postfields = payload,
-        },
-    -- ParaGlobal.ExecuteFilter(py2lua_exe, py_code, function(c) print(c) end)
-
---[[
-    NPL.activate(exe_loader_rel_path, {
-        exe_path = py2lua_exe,
-        input = py_code,
-        callback = "Mod/PyRuntime/Transpiler.lua"
-    })
-    
-]]
+    return error, luacode
 end
 
 function Transpiler:installMethods(codeAPI, pyAPIs)

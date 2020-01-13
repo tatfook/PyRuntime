@@ -26,9 +26,24 @@ local http_post = System.os.GetUrl
 
 local Transpiler = NPL.export()
 
+local defautl_ip = '127.0.0.1'
+local defautl_port = 8006
+local port = defautl_port
+
+function Transpiler:OnInit()
+    while ParaGlobal.PortInUse(defautl_ip, port) do
+        port = port + 1
+    end
+
+    ParaGlobal.ExecuteFilter('C:/msys64/home/favor/project/PyRuntime/Mod/PyRuntime/py2lua/dist/py2lua.exe', {'--addr', defautl_ip, '--port', tostring(port)})
+
+    LOG.std(nil, "info", "PyRuntime", "start py2lua service at " .. defautl_ip .. ":" .. tostring(port))
+end
+
 function Transpiler:transpile(pycode)
+    local url = string.format('http://%s:%d/transpile', defautl_ip, port)
     local err, msg, data = http_post({
-            url='http://127.0.0.1:8080',
+            url=url,
             method = 'POST',
             json = true,
             form = {
@@ -43,6 +58,24 @@ function Transpiler:transpile(pycode)
     return error, luacode
 end
 
+function Transpiler:OnDestroy()
+    local url = string.format('http://%s:%d/exit', defautl_ip, port)
+    local err, msg, data = http_post({
+            url=url,
+            method = 'POST',
+            json = true,
+            form = {}
+        }
+    )
+
+    if err == 200 then
+        LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' succeed.')
+    else
+        LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' FAILED!!!!!')
+    end        
+end
+
+
 function Transpiler:installMethods(codeAPI, pyAPIs)
     for func_name, func in pairs(pyAPIs) do
 		if(type(func_name) == "string" and type(func) == "function") then
@@ -52,37 +85,3 @@ function Transpiler:installMethods(codeAPI, pyAPIs)
 		end
 	end
 end
-
-function Transpiler:OsSupported()
-    local is_supported = (System.os.GetPlatform() == "win32")
-    return is_supported;
-end
-
-local function activate()
-    if msg then
-        local runtime_error = msg["runtime_error"]
-        local exit_code = msg["exit_code"]
-        local output = msg["output"]
-
-        if runtime_error then
-            Transpiler.callback({
-                lua_code = nil,
-                error_msg = "Dll runtime error happens, please check the log"
-            })
-        else
-            if exit_code ~= 0 then
-                Transpiler.callback({
-                    lua_code = nil,
-                    error_msg = output
-                })
-            else
-                Transpiler.callback({
-                    lua_code = output,
-                    error_msg = nil
-                })
-            end
-        end
-    end
-end
-
-NPL.this(activate)

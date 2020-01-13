@@ -10,6 +10,7 @@ NPL.load("Mod/PyRuntime/main.lua");
 ]]
 
 local PyRuntime = commonlib.inherit(commonlib.gettable("Mod.ModBase"), commonlib.gettable("Mod.PyRuntime"))
+local transpiler = NPL.load("Mod/PyRuntime/Transpiler.lua")
 
 function PyRuntime:ctor()
 end
@@ -26,6 +27,8 @@ end
 
 function PyRuntime:init()
 	LOG.std(nil, "info", "PyRuntime", "plugin initialized")
+
+	transpiler:OnInit()
 
     -- register a new block item, id < 10512 is internal items, which is not recommended to modify. 
 	GameLogic.GetFilters():add_filter("block_types", function(xmlRoot) 
@@ -66,6 +69,9 @@ function PyRuntime:OnLeaveWorld()
 end
 
 function PyRuntime:OnDestroy()
+	LOG.std(nil, "info", "PyRuntime", "Plugin destroy")
+
+	transpiler:OnDestroy()
 end
 
 function PyRuntime.LoadPlugin(callback)

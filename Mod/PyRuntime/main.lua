@@ -62,16 +62,20 @@ end
 
 -- called when a new world is loaded. 
 function PyRuntime:OnWorldLoad()
+	LOG.std(nil, "info", "PyRuntime", "world load")
+
 end
 
 -- called when a world is unloaded. 
 function PyRuntime:OnLeaveWorld()
+	LOG.std(nil, "info", "PyRuntime", "world leave")
+
 end
 
 function PyRuntime:OnDestroy()
 	LOG.std(nil, "info", "PyRuntime", "Plugin destroy")
 
-	transpiler:OnDestroy()
+	-- transpiler:OnDestroy()
 end
 
 function PyRuntime.LoadPlugin(callback)

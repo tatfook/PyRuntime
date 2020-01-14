@@ -31,11 +31,11 @@ local defautl_port = 8006
 local port = defautl_port
 
 function Transpiler:OnInit()
-    while ParaGlobal.PortInUse(defautl_ip, port) do
+    while not ParaGlobal.IsPortAvailable(defautl_ip, port) do
         port = port + 1
     end
 
-    ParaGlobal.ExecuteFilter('C:/msys64/home/favor/project/PyRuntime/Mod/PyRuntime/py2lua/dist/py2lua.exe', {'--addr', defautl_ip, '--port', tostring(port)})
+    ParaGlobal.Execute('C:/msys64/home/favor/project/PyRuntime/Mod/PyRuntime/py2lua/dist/py2lua.exe', {'--addr', defautl_ip, '--port', tostring(port)})
 
     LOG.std(nil, "info", "PyRuntime", "start py2lua service at " .. defautl_ip .. ":" .. tostring(port))
 end

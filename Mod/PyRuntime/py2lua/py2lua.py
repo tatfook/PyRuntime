@@ -2,12 +2,16 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
-import json, argparse, sys
+import json, argparse, sys, threading
 from urllib import parse
+from timeit import default_timer as timer
+from datetime import timedelta
 
 from pythonlua.translator import Translator
 
 server = None
+verbose = None
+time = None
 
 class handler(BaseHTTPRequestHandler):
     """
@@ -32,13 +36,20 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         post_path = parse.urlparse(self.path).path
 
-        print(post_path)
+        if time:
+            start = timer()
+
         if post_path == '/transpile':
             self._transplie()
         elif post_path == '/exit':
             self._exit()
         else:
             pass
+
+        if time:
+            end = timer()
+            print(threading.currentThread().getName(), 'time consume:', timedelta(seconds=end-start))
+
 
     def _transplie(self):
         content_length = int(self.headers['Content-Length'])
@@ -47,13 +58,8 @@ class handler(BaseHTTPRequestHandler):
         data = json.loads(content.decode('utf-8'), 'utf-8')
         pycode = data['pycode']
 
-        print(pycode)
-
         translator = Translator()
         error, luacode = translator.translate(pycode)
-
-        print('=' * 80)
-        print(luacode)
 
         res = {
             "error": error,
@@ -66,6 +72,14 @@ class handler(BaseHTTPRequestHandler):
                          'application/json; charset=utf-8')
         self.end_headers()
         self.wfile.write(res.encode('utf-8'))
+
+        if verbose:
+            print('=' * 40)
+            print(pycode)
+            print('-' * 40)
+            print(luacode)
+            print('=' * 40)
+
 
     def _exit(self):
         res = {
@@ -90,6 +104,9 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--addr', type=str, default='127.0.0.1', help='serve listen address')
     parser.add_argument('--port', type=int, default=8006, help='serve listen port')
+    parser.add_argument('--verbose', dest='verbose', action='store_true', help='if show verbose information')
+    parser.add_argument('--time', dest='time', action='store_true', help='if show time measurement')
+    parser.set_defaults(verbose=False, time=False)
     return parser
 
 if __name__ == '__main__':
@@ -104,6 +121,8 @@ if __name__ == '__main__':
 
     addr = args.addr
     port = args.port
+    verbose = args.verbose
+    time = args.time
 
     server = ThreadedHTTPServer((addr, port), handler)
     print('start server at %s:%d, use <Ctrl-C> to stop' % (addr, port))

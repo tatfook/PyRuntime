@@ -28,13 +28,10 @@ end
 function PyRuntime:init()
 	LOG.std(nil, "info", "PyRuntime", "plugin initialized")
 
-	transpiler:OnInit()
-
     -- register a new block item, id < 10512 is internal items, which is not recommended to modify. 
 	GameLogic.GetFilters():add_filter("block_types", function(xmlRoot) 
 		local blocks = commonlib.XPath.selectNode(xmlRoot, "/blocks/");
 		if(blocks) then
-            -- NPL CAD v2.0 with Code Block
 			NPL.load("(gl)Mod/PyRuntime/ItemPyRuntimeCodeBlock.lua");
 			blocks[#blocks+1] = {name="block", attr={ name="PyRuntimeCodeBlock",
 				id = 10516, item_class="ItemPyRuntimeCodeBlock", text=L"PyRuntimeCodeBlock",
@@ -64,18 +61,18 @@ end
 function PyRuntime:OnWorldLoad()
 	LOG.std(nil, "info", "PyRuntime", "world load")
 
+	transpiler:OnInit()
 end
 
 -- called when a world is unloaded. 
 function PyRuntime:OnLeaveWorld()
 	LOG.std(nil, "info", "PyRuntime", "world leave")
 
+	transpiler:OnDestroy()
 end
 
 function PyRuntime:OnDestroy()
 	LOG.std(nil, "info", "PyRuntime", "Plugin destroy")
-
-	-- transpiler:OnDestroy()
 end
 
 function PyRuntime.LoadPlugin(callback)

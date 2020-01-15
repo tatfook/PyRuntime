@@ -6,12 +6,33 @@ import json, argparse, sys, threading
 from urllib import parse
 from timeit import default_timer as timer
 from datetime import timedelta
+from threading import Timer
 
 from pythonlua.translator import Translator
 
 server = None
+monitor = None
 verbose = None
-time = None
+max_idle_interval = None
+
+last_visit_time = timer()
+check_interval = 10 # seconds
+
+
+def check():
+    now = timer()
+
+    if verbose:
+        print('now is time', now)
+        print('last visit time', last_visit_time)
+
+    if timedelta(seconds=(now - last_visit_time)) > max_idle_interval:
+        exit_server()
+
+def exit_server():
+    server.shutdown()
+    monitor.cancel()
+
 
 class handler(BaseHTTPRequestHandler):
     """
@@ -19,7 +40,6 @@ class handler(BaseHTTPRequestHandler):
     {
         "pycode": pycode
     }
-    -------------------------------------------
     response
     {
         "error": true/false,
@@ -27,7 +47,6 @@ class handler(BaseHTTPRequestHandler):
     }
 
     request /exit
-    -------------------------------------------
     response
     {
         "exit": true
@@ -36,7 +55,7 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         post_path = parse.urlparse(self.path).path
 
-        if time:
+        if verbose:
             start = timer()
 
         if post_path == '/transpile':
@@ -46,12 +65,15 @@ class handler(BaseHTTPRequestHandler):
         else:
             pass
 
-        if time:
+        if verbose:
             end = timer()
             print(threading.currentThread().getName(), 'time consume:', timedelta(seconds=end-start))
 
 
     def _transplie(self):
+        global last_visit_time
+        last_visit_time = timer()
+
         content_length = int(self.headers['Content-Length'])
         content = self.rfile.read(content_length)
 
@@ -93,11 +115,17 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(res.encode('utf-8'))
 
-        server.shutdown()
+        exit_server()
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """handle requests in a seperate thread."""
+
+
+class RepeatTimer(Timer):
+    def run(self):
+        while not self.finished.wait(self.interval):
+            self.function(*self.args, **self.kwargs)
 
 
 def get_parser():
@@ -105,8 +133,8 @@ def get_parser():
     parser.add_argument('--addr', type=str, default='127.0.0.1', help='serve listen address')
     parser.add_argument('--port', type=int, default=8006, help='serve listen port')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='if show verbose information')
-    parser.add_argument('--time', dest='time', action='store_true', help='if show time measurement')
-    parser.set_defaults(verbose=False, time=False)
+    parser.add_argument('--idle_time', type=int, default=30, help='serve will auto exit from being idle in minutes')
+    parser.set_defaults(verbose=False)
     return parser
 
 if __name__ == '__main__':
@@ -122,7 +150,10 @@ if __name__ == '__main__':
     addr = args.addr
     port = args.port
     verbose = args.verbose
-    time = args.time
+    max_idle_interval = timedelta(minutes=args.idle_time)
+
+    monitor = RepeatTimer(check_interval, check)
+    monitor.start()
 
     server = ThreadedHTTPServer((addr, port), handler)
     print('start server at %s:%d, use <Ctrl-C> to stop' % (addr, port))

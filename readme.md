@@ -14,53 +14,5 @@
 $ git clone https://github.com/tatfook/PyRuntime
 ```
 
-在代码中使用 PyRuntime
-
-**tranpile**
-
-```lua
-local pyruntime = NPL.load("Mod/PyRuntime/Transpiler.lua")
-pyruntime:transpile("b = 3", function(res)
-    local lua_code = res["lua_code"]
-    if lua_code == nil then
-        -- error happens
-        print(res["error_msg"])
-    end
-
-    -- deal with lua_code normally
-    print(lua_code)
-end)
-```
-
-示例结果
-
-```
-local b = 3
-```
-
-**run**
-
-```lua
-local pyruntime = NPL.load("Mod/PyRuntime/Transpiler.lua")
-pyruntime:run("print(3)", _G)
-```
-
-示例结果
-
-```
-3
-```
-
-## error handling
-
-在使用 mod 的过程中，可能会出现错误情况，比如
-- python 代码语法不正确
-- 底层代码出现错误
-- etc
-
-`transpile()`方法会返回一个 table，其中包含 `lua_code` 和 `error_msg`：
-- 当转换正常，`lua_code` 保存了转换的结果
-- 当转换过程出现错误时，`lua_code` 结果为 `nil`，相关错误信息会保存在 `error_msg`
-
-
+使用方式参考 https://github.com/tatfook/PyRuntime/blob/master/Mod/PyRuntime/Transpiler.lua
 

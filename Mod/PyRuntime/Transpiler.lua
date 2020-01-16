@@ -2,45 +2,63 @@
 Title: PyRuntime Transpiler
 Author(s): DreamAndDead
 Date: 2019/09/29
-Desc: Call external py2lua.exe to tranpile pycode to luacode
+Desc: tranpile pycode to luacode
 use the lib:
 ------------------------------------------------------------
 local transpiler = NPL.load("Mod/PyRuntime/Transpiler.lua")
 
-transpiler:transpile(py_code, function(res)
-    local lua_code = res["lua_code"]
-    if lua_code == nil then
-        -- handle error message
-        print(res["error_msg"])
-    end
+transpiler:start()
 
-    -- deal with lua_code
-    print(lua_code)
-end)
+error, luacode = transpiler:transpile(py_code)
 
-transpiler:run(py_code, _G)
+if error then
+    print("error msg", luacode)
+end
+
+-- do with luacode
+
+transpiler:terminate()
 ------------------------------------------------------------
 --]]
 
-local http_post = System.os.GetUrl
-
 local Transpiler = NPL.export()
+
+local http_post = System.os.GetUrl
+local app_root = ParaIO.GetCurDirectory(0)
+local py2lua_exe = app_root .. "plugins/py2lua.exe"
 
 local defautl_ip = '127.0.0.1'
 local defautl_port = 8006
 local port = defautl_port
+local loaded = false
+local max_alive_interval = 1 -- minutes
 
-function Transpiler:OnInit()
+
+function Transpiler:start()
+    if loaded then
+        LOG.std(nil, "info", "PyRuntime", "py2lua service has been loaded at " .. defautl_ip .. ":" .. tostring(port))
+    end
+
+    if not ParaIO.DoesFileExist(py2lua_exe) then
+        LOG.std(nil, "info", "PyRuntime", "py2lua.exe not exists in plugins/ directory, please update to latest version.")
+        return
+    end
+
     while not ParaGlobal.IsPortAvailable(defautl_ip, port) do
         port = port + 1
     end
 
-    ParaGlobal.Execute('C:/msys64/home/favor/project/PyRuntime/Mod/PyRuntime/py2lua/dist/py2lua.exe', {'--addr', defautl_ip, '--port', tostring(port)})
+    ParaGlobal.Execute(py2lua_exe, {'--addr', defautl_ip, '--port', tostring(port), '--max_alive_interval', tostring(max_alive_interval), '--verbose'})
+    loaded = true
 
     LOG.std(nil, "info", "PyRuntime", "start py2lua service at " .. defautl_ip .. ":" .. tostring(port))
 end
 
 function Transpiler:transpile(pycode)
+    if not loaded then
+        self:start()
+    end
+
     local url = string.format('http://%s:%d/transpile', defautl_ip, port)
     local err, msg, data = http_post({
             url=url,
@@ -51,14 +69,23 @@ function Transpiler:transpile(pycode)
             }
         }
     )
-        
+    
+    if data == nil then
+        LOG.std(nil, "info", "PyRuntime", "transpile error happens")
+        return true, "can't fetch data from py2lua service"
+    end
+
     local error = data['error']
     local luacode = data['luacode']
 
     return error, luacode
 end
 
-function Transpiler:OnDestroy()
+function Transpiler:terminate()
+    if not loaded then
+        LOG.std(nil, "info", "PyRuntime", "py2lua service is not running")
+    end
+
     local url = string.format('http://%s:%d/exit', defautl_ip, port)
     local err, msg, data = http_post({
             url=url,
@@ -69,9 +96,10 @@ function Transpiler:OnDestroy()
     )
 
     if err == 200 then
+        loaded = false
         LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' succeed.')
     else
-        LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' FAILED!!!!!')
+        LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' FAILED!')
     end        
 end
 

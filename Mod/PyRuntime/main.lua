@@ -28,6 +28,8 @@ end
 function PyRuntime:init()
 	LOG.std(nil, "info", "PyRuntime", "plugin initialized")
 
+	transpiler:start()
+
     -- register a new block item, id < 10512 is internal items, which is not recommended to modify. 
 	GameLogic.GetFilters():add_filter("block_types", function(xmlRoot) 
 		local blocks = commonlib.XPath.selectNode(xmlRoot, "/blocks/");
@@ -61,14 +63,14 @@ end
 function PyRuntime:OnWorldLoad()
 	LOG.std(nil, "info", "PyRuntime", "world load")
 
-	transpiler:OnInit()
+	transpiler:start()
 end
 
 -- called when a world is unloaded. 
 function PyRuntime:OnLeaveWorld()
 	LOG.std(nil, "info", "PyRuntime", "world leave")
 
-	transpiler:OnDestroy()
+	transpiler:terminate()
 end
 
 function PyRuntime:OnDestroy()

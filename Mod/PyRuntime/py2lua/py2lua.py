@@ -11,31 +11,11 @@ from threading import Timer
 from pythonlua.translator import Translator
 
 server = None
-monitor = None
 verbose = None
-max_alive_interval = None
-
-last_visit_time = timer()
-check_interval = 10 # seconds
-
-
-def check():
-    now = timer()
-
-    if verbose:
-        print('now is time', now)
-        print('last visit time', last_visit_time)
-
-    if timedelta(seconds=(now - last_visit_time)) > max_alive_interval:
-        exit_server()
 
 def exit_server():
     server.shutdown()
-    monitor.cancel()
-    sys.exit()
     print('auto exit server at %s:%d' % (addr, port))
-
-
 
 class handler(BaseHTTPRequestHandler):
     """
@@ -134,7 +114,6 @@ def get_parser():
     parser.add_argument('--addr', type=str, default='127.0.0.1', help='serve listen address')
     parser.add_argument('--port', type=int, default=8006, help='serve listen port')
     parser.add_argument('--verbose', dest='verbose', action='store_true', help='if show verbose information')
-    parser.add_argument('--max_alive_interval', type=int, default=30, help='serve will auto exit after being idle in these minutes')
     parser.set_defaults(verbose=False)
     return parser
 
@@ -151,10 +130,6 @@ if __name__ == '__main__':
     addr = args.addr
     port = args.port
     verbose = args.verbose
-    max_alive_interval = timedelta(minutes=args.max_alive_interval)
-
-    monitor = RepeatTimer(check_interval, check)
-    monitor.start()
 
     server = ThreadedHTTPServer((addr, port), handler)
     print('start server at %s:%d, use <Ctrl-C> to stop' % (addr, port))

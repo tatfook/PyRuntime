@@ -31,7 +31,6 @@ local defautl_ip = '127.0.0.1'
 local defautl_port = 8006
 local port = defautl_port
 local loaded = false
-local max_alive_interval = 1 -- minutes
 
 
 function Transpiler:start()
@@ -48,7 +47,7 @@ function Transpiler:start()
         port = port + 1
     end
 
-    ParaGlobal.Execute(py2lua_exe, {'--addr', defautl_ip, '--port', tostring(port), '--max_alive_interval', tostring(max_alive_interval), '--verbose'})
+    ParaGlobal.Execute(py2lua_exe, {'--addr', defautl_ip, '--port', tostring(port), '--verbose'})
     loaded = true
 
     LOG.std(nil, "info", "PyRuntime", "start py2lua service at " .. defautl_ip .. ":" .. tostring(port))

@@ -12,7 +12,7 @@ function test_pyfile()
 {
     pyfile=$1
     pyluafile=$pyfile.lua
-    echo "test python file $pyfile"
+    printf "test python file $pyfile ... "
 
     $PYTHON $pylua < $pyfile > $pyluafile
 
@@ -23,9 +23,9 @@ function test_pyfile()
     lua_exit=$?
 
     if [[ $py_it -eq 0 ]] && [[ $lua_exit -eq 0 ]]; then
-	echo "success"
+	printf "success\n"
     else
-	echo "fail"
+	printf "fail!!!\n"
     fi
 
     if [[ $py_exit -ne 0 ]]; then

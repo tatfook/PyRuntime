@@ -772,7 +772,7 @@ python 语言环境中除了引用标准库，其中有不少有用的[内建函
 |`open`|`todo`|` `|:x:|
 |`ord`|`todo`|` `|:x:|
 |`pow`|`pow(2, 10)`|`pow(2, 10)`|:heavy_check_mark:|
-|`print`|`todo`|` `|:x:|
+|`print`|`print(a, b, c)`|`print(a, b, c)`|:heavy_check_mark:，对于字符串的格式化尚不完善，目前只能将所有参数依次序输出|
 |`property`|`todo`|` `|:x:|
 |`range`|`for i in range(1, 10):`|`for i in range(1, 10):`|:heavy_check_mark:|
 |`reduce`|`reduce(add, [1, 2, 3])`|`reduce(add, list {1, 2, 3})`|:heavy_check_mark:|

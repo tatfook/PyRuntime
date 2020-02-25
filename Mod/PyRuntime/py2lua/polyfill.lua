@@ -7,14 +7,6 @@ local function check_int(n)
    end
 end
 
-local function print_tbl(tbl)
-   local b = ''
-   for i = max_bit_length, 1, -1 do
-      b = b .. tostring(tbl[i])
-   end
-   print(b)
-end
-
 local function number_to_tbl(n)
    check_int(n)
    
@@ -1323,6 +1315,25 @@ local function pow(x, y, z)
    end
 end
 
+-- print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
+-- Prints the values to a stream, or to sys.stdout by default.
+-- Optional keyword arguments:
+-- file:  a file-like object (stream); defaults to the current sys.stdout.
+-- sep:   string inserted between values, default a space.
+-- end:   string appended after the last value, default a newline.
+-- flush: whether to forcibly flush the stream.
+local old_print = print
+local write = io.write
+local function print(...)
+    local n = select("#",...)
+    for i = 1,n do
+        local v = tostring(select(i,...))
+        write(v)
+        if i~=n then write' ' end
+    end
+    write'\n'
+end
+
 
 -- round(number[, ndigits]) -> number
 -- round a number to a given precision in decimal digits (default 0 digits).
@@ -2050,6 +2061,7 @@ return {
    ["operator_is"] = operator_is,
    ["object"] = object,
    ["pow"] = pow,
+   ["print"] = print,
    ["round"] = round,
    ["set"] = set,
    ["frozenset"] = frozenset,

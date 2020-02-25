@@ -123,6 +123,13 @@ assert((oct(1000) == "0o1750"))
 assert((oct(10000) == "0o23420"))
 assert((pow(2, 10) == 1024))
 assert((pow(2, 9, 3) == 2))
+local a = 10
+local b = 20
+local c = "message"
+print()
+print(a)
+print(a, b)
+print(a, b, c)
 l = (function() local result = list {} for _, i in range(10) do result.append(i) end return result end)()
 assert((len(l) == 10))
 assert((l[_to_null(0)] == 0))

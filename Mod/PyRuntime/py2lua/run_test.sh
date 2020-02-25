@@ -3,7 +3,7 @@
 PYTHON=python3
 LUA=lua5.1
 TEST_FOLDER=./codeblock/
-pylua=./py2lua.py
+pylua=./run_test.py
 luatest=./run_test.lua
 
 pyfile_path=$1

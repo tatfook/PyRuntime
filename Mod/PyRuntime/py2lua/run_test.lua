@@ -1,5 +1,3 @@
-local i = require 'inspect'.inspect
-
 local code, error_msg = loadfile(arg[1])
 
 if code == nil then

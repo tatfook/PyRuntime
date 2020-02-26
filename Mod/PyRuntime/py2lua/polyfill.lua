@@ -1324,13 +1324,7 @@ end
 -- flush: whether to forcibly flush the stream.
 local old_print = print
 local function print(...)
-    local n = select("#",...)
-    for i = 1,n do
-        local v = tostring(select(i,...))
-        io.stdout:write(v)
-        if i~=n then write' ' end
-    end
-    io.stdout:write'\n'
+   old_print(...)
 end
 
 

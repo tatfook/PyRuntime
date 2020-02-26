@@ -6,8 +6,8 @@ A python project for transpiling pycode to luacode and can be distributed as a s
 
 ### prerequisite
 
-- install python 3.4 or higher
-- install pyinstaller by pip
+- manually install python 3.4.4
+- `pip install pyinstaller==3.4`
 
 ### run
 

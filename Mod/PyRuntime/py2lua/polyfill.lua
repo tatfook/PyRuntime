@@ -1323,15 +1323,14 @@ end
 -- end:   string appended after the last value, default a newline.
 -- flush: whether to forcibly flush the stream.
 local old_print = print
-local write = io.write
 local function print(...)
     local n = select("#",...)
     for i = 1,n do
         local v = tostring(select(i,...))
-        write(v)
+        io.stdout:write(v)
         if i~=n then write' ' end
     end
-    write'\n'
+    io.stdout:write'\n'
 end
 
 

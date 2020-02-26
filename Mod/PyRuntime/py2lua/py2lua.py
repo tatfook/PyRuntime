@@ -6,7 +6,6 @@ import json, argparse, sys, threading
 from urllib import parse
 from timeit import default_timer as timer
 from datetime import timedelta
-from threading import Timer
 
 from pythonlua.translator import Translator
 
@@ -15,7 +14,7 @@ verbose = None
 
 def exit_server():
     server.shutdown()
-    print('auto exit server at %s:%d' % (addr, port))
+    print('exit server at %s:%d' % (addr, port))
 
 class handler(BaseHTTPRequestHandler):
     """
@@ -26,12 +25,13 @@ class handler(BaseHTTPRequestHandler):
     response
     {
         "error": true/false,
-        "luacode": luacode/error_msg
+        "luacode": error_msg/luacode
     }
 
     request /exit
     response
-    { }
+    {       
+    }
     """
     def do_POST(self):
         post_path = parse.urlparse(self.path).path
@@ -101,12 +101,6 @@ class handler(BaseHTTPRequestHandler):
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """handle requests in a seperate thread."""
-
-
-class RepeatTimer(Timer):
-    def run(self):
-        while not self.finished.wait(self.interval):
-            self.function(*self.args, **self.kwargs)
 
 
 def get_parser():

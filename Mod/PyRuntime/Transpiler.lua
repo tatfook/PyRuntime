@@ -12,10 +12,11 @@ transpiler:start()
 error, luacode = transpiler:transpile(py_code)
 
 if error then
-    print("error msg", luacode)
+    local error_msg = luacode
+    print("error msg", error_msg)
 end
 
--- do with luacode
+-- handle with the transpiled luacode
 
 transpiler:terminate()
 ------------------------------------------------------------

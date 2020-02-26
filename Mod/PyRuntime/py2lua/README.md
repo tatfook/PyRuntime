@@ -1,17 +1,17 @@
 # py2lua
 
-A python project for transpiling pycode to luacode and can be distributed as a single executable file for npl mod.
+A python project for transpiling pycode to luacode and can be distributed as a single executable file to run.
 
 ## usage
 
 ### prerequisite
 
-- manually install python 3.4.4
-- `pip install pyinstaller==3.4`
+- 安装 python 3.4.4 32bit（对于老式的平台如 XP，无法运行 64bit 程序）
+- `pip install pyinstaller==3.4` （更新版本的 pyinstaller 脱离了对 py 3.4 的支持）
 
 ### run
 
-执行 tranpiler 程序，从 stdin 读取 python 代码，在 stdout 输出翻译的 lua 代码。
+py2lua 采用了 C/S 结构来提升
 
 ```
 $ python py2lua.py < pycode.py

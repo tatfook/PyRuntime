@@ -2054,7 +2054,7 @@ return {
    ["operator_is"] = operator_is,
    ["object"] = object,
    ["pow"] = pow,
-   ["print"] = print,
+--   ["print"] = print,  -- using npl codeblock print function
    ["round"] = round,
    ["set"] = set,
    ["frozenset"] = frozenset,

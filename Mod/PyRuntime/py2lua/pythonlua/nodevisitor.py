@@ -529,6 +529,12 @@ class NodeVisitor(ast.NodeVisitor):
 
         self.emit(line.format(**values))
 
+    def visit_Import(self, node):
+        pass
+
+    def visit_ImportFrom(self, node):
+        pass
+
     def visit_Index(self, node):
         """Visit index"""
         line = "_to_null({})"

@@ -7,7 +7,9 @@ from pythonlua.translator import Translator
 
 def main():
     """Entry point function to the translator"""
-    content = sys.stdin.read()
+    with open(sys.argv[1], 'r', encoding='utf-8') as f:
+        content = f.read()
+
     translator = Translator()
     error, result = translator.translate(content)
 
@@ -18,4 +20,7 @@ def main():
     return exit_code
 
 if __name__ == "__main__":
-     sys.exit(main())
+    if len(sys.argv) < 2:
+        sys.exit()
+
+    sys.exit(main())

@@ -38,8 +38,6 @@ class NodeVisitor(ast.NodeVisitor):
         - Nonlocal
         - Continue
         - YieldFrom
-        - Import
-        - ImportFrom
         - With
         """
         raise RuntimeError("unsupported syntax '%s' at line %d col %d" % (node.__class__.__name__, node.lineno, node.col_offset))

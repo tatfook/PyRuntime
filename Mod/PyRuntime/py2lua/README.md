@@ -16,6 +16,7 @@ A python project for transpiling pycode to luacode and can be distributed as a s
 
 - 安装 python 3.4.4 32bit（对于老式的平台如 XP，无法运行 64bit 程序）
 - `pip install pyinstaller==3.4` （更新版本的 pyinstaller 脱离了对 py 3.4 的支持）
+- （可选，仅供运行测试）安装 lua5.1 (use `choco install lua51` for windows)
 
 ### run
 

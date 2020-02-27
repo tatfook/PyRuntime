@@ -2,7 +2,7 @@
 
 pyfile=$1
 pyast=pyast.py
-pylua=py2lua.py
+pylua=run_test.py
 
 echo "==========py=========="
 cat $pyfile
@@ -13,5 +13,5 @@ python $pyast $pyfile
 echo
 
 echo "==========lua=========="
-python $pylua < $pyfile
+python $pylua $pyfile
 echo

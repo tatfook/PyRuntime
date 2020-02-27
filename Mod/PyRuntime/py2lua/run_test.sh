@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-PYTHON=python3
+PYTHON=python3.4
 LUA=lua5.1
 TEST_FOLDER=./codeblock/
 pylua=./run_test.py
@@ -14,7 +14,7 @@ function test_pyfile()
     pyluafile=$pyfile.lua
     printf "test python file $pyfile ... "
 
-    $PYTHON $pylua < $pyfile > $pyluafile
+    $PYTHON $pylua $pyfile > $pyluafile
 
     $PYTHON $pyfile
     py_exit=$?

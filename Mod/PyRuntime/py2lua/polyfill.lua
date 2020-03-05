@@ -2030,12 +2030,12 @@ end
 -- flush: whether to forcibly flush the stream.
 ---[[
 local function print(...)
-    codeblock_env['cb_print'](...)
+    return codeblock_env['cb_print'](...)
 end
 --]]
 
 local function input(...)
-    codeblock_env['cb_ask'](...)
+    return codeblock_env['cb_ask'](...)
 end
 
 

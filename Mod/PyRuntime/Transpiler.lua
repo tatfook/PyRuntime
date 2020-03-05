@@ -38,6 +38,7 @@ local loaded = false
 function Transpiler:start()
     if loaded then
         LOG.std(nil, "info", "PyRuntime", "py2lua service has been loaded at " .. defautl_ip .. ":" .. tostring(port))
+        return
     end
 
     if not ParaIO.DoesFileExist(py2lua_exe) then
@@ -85,6 +86,7 @@ end
 function Transpiler:terminate()
     if not loaded then
         LOG.std(nil, "info", "PyRuntime", "py2lua service is not running")
+        return
     end
 
     local url = string.format('http://%s:%d/exit', defautl_ip, port)

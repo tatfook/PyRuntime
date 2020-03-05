@@ -62,15 +62,11 @@ end
 -- called when a new world is loaded. 
 function PyRuntime:OnWorldLoad()
 	LOG.std(nil, "info", "PyRuntime", "world load")
-
-	transpiler:start()
 end
 
 -- called when a world is unloaded. 
 function PyRuntime:OnLeaveWorld()
 	LOG.std(nil, "info", "PyRuntime", "world leave")
-
-	transpiler:terminate()
 end
 
 function PyRuntime:OnDestroy()

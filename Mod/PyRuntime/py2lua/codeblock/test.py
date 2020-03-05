@@ -1,6 +1,3 @@
-# list can't contain trailing None
+a = 1
 
-d = {}
-
-d[None] = 1
-
+print("" + a)

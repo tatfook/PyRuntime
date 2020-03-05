@@ -1,2 +1,2 @@
-local d = dict {}
-d[_to_null(nil)] = 1
+local a = 1
+print(("" + a))

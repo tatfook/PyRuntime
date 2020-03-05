@@ -31,7 +31,7 @@ local py2lua_exe = app_root .. "plugins/py2lua.exe"
 local defautl_ip = '127.0.0.1'
 local defautl_port = 8006
 local port = defautl_port
-local max_alive_interval = 1 -- minutes
+local max_alive_interval = 20 -- minutes
 local loaded = false
 
 

@@ -1,3 +1,15 @@
+local codeblock_env = {}
+
+local function _set_codeblock_env(env)
+    for func_name, func in pairs(env) do
+        if(type(func_name) == "string" and type(func) == "function") then
+            codeblock_env['cb_' .. func_name] = func
+        end
+    end
+end
+
+
+
 local max_bit_length = 32
 
 local function check_int(n)
@@ -1316,17 +1328,7 @@ local function pow(x, y, z)
     end
 end
 
--- print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
--- Prints the values to a stream, or to sys.stdout by default.
--- Optional keyword arguments:
--- file:  a file-like object (stream); defaults to the current sys.stdout.
--- sep:   string inserted between values, default a space.
--- end:   string appended after the last value, default a newline.
--- flush: whether to forcibly flush the stream.
-local old_print = print
-local function print(...)
-    old_print(...)
-end
+
 
 
 -- round(number[, ndigits]) -> number
@@ -2018,6 +2020,26 @@ local function zip(iter1, ...)
 end
 
 
+
+-- print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
+-- Prints the values to a stream, or to sys.stdout by default.
+-- Optional keyword arguments:
+-- file:  a file-like object (stream); defaults to the current sys.stdout.
+-- sep:   string inserted between values, default a space.
+-- end:   string appended after the last value, default a newline.
+-- flush: whether to forcibly flush the stream.
+---[[
+local function print(...)
+    codeblock_env['cb_print'](...)
+end
+--]]
+
+local function input(...)
+    codeblock_env['cb_ask'](...)
+end
+
+
+
 return {
     ["bit"] = bit,
     ["unpack"] = unpack,
@@ -2034,6 +2056,7 @@ return {
     ["filter"] = filter,
     ["float"] = float,
     ["hex"] = hex,
+    ["input"] = input,
     ["int"] = int,
     ["len"] = len,
     ["_to_null"] = _to_null,
@@ -2055,7 +2078,7 @@ return {
     ["operator_is"] = operator_is,
     ["object"] = object,
     ["pow"] = pow,
-    --   ["print"] = print,  -- using npl codeblock print function
+    ["print"] = print,
     ["round"] = round,
     ["set"] = set,
     ["frozenset"] = frozenset,
@@ -2068,4 +2091,5 @@ return {
     ["issubclass"] = issubclass,
     ["super"] = super,
     ["zip"] = zip,
+    ["_set_codeblock_env"] = _set_codeblock_env,
 }

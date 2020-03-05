@@ -1,205 +1,206 @@
 local max_bit_length = 32
 
 local function check_int(n)
-   -- checking not float
-   if(n - math.floor(n) > 0) then
-      error("trying to use bitwise operation on non-integer!")
-   end
+    -- checking not float
+    if(n - math.floor(n) > 0) then
+        error("trying to use bitwise operation on non-integer!")
+    end
 end
 
 local function number_to_tbl(n)
-   check_int(n)
-   
-   local tbl = {}
+    check_int(n)
 
-   if n >= 0 then
-      for i = 1, max_bit_length do
-	 local last = math.mod(n, 2)
-	 tbl[i] = last
-	 n = math.floor(n/2)
-      end
-   else -- n < 0
-      local p = -n
-      for i = 1, max_bit_length do
-	 local last = math.mod(p, 2)
-	 tbl[i] = last
-	 p = math.floor(p/2)
-      end
+    local tbl = {}
 
-      -- invert
-      local invert_tbl = {}
-      for i = 1, max_bit_length do
-	 local b = tbl[i]
-	 if b == 1 then
-	    invert_tbl[i] = 0
-	 else
-	    invert_tbl[i] = 1
-	 end
-      end
-      -- plus 1
-      local plus_one_tbl = {}
-      local carry = 1
-      for i = 1, max_bit_length do
-	 local b = invert_tbl[i]
-	 local s = b + carry
-	 if s == 2 then
-	    carry = 1
-	    plus_one_tbl[i] = 0
-	 else
-	    carry = 0
-	    plus_one_tbl[i] = s
-	 end
-      end
+    if n >= 0 then
+        for i = 1, max_bit_length do
+            local last = math.mod(n, 2)
+            tbl[i] = last
+            n = math.floor(n/2)
+        end
+    else -- n < 0
+        local p = -n
+        for i = 1, max_bit_length do
+            local last = math.mod(p, 2)
+            tbl[i] = last
+            p = math.floor(p/2)
+        end
 
-      tbl = plus_one_tbl
-   end
+        -- invert
+        local invert_tbl = {}
+        for i = 1, max_bit_length do
+            local b = tbl[i]
+            if b == 1 then
+                invert_tbl[i] = 0
+            else
+                invert_tbl[i] = 1
+            end
+        end
+        -- plus 1
+        local plus_one_tbl = {}
+        local carry = 1
+        for i = 1, max_bit_length do
+            local b = invert_tbl[i]
+            local s = b + carry
+            if s == 2 then
+                carry = 1
+                plus_one_tbl[i] = 0
+            else
+                carry = 0
+                plus_one_tbl[i] = s
+            end
+        end
 
-   return tbl
+        tbl = plus_one_tbl
+    end
+
+    return tbl
 end
 
 local function tbl_to_number(tbl)
-   local power = 1
-   local n = 0
-   for i = 1, max_bit_length do
-      local b = tbl[i]
-      if i == max_bit_length and b == 1 then
-	 n = n - power
-      else
-	 n = n + power * b
-      end
+    local power = 1
+    local n = 0
+    for i = 1, max_bit_length do
+        local b = tbl[i]
+        if i == max_bit_length and b == 1 then
+            n = n - power
+        else
+            n = n + power * b
+        end
 
-      power = power * 2
-   end
+        power = power * 2
+    end
 
-   return n
+    return n
 end
 
 local function bit_and(left, right)
-   local left_tbl = number_to_tbl(left)
-   local right_tbl = number_to_tbl(right)
+    local left_tbl = number_to_tbl(left)
+    local right_tbl = number_to_tbl(right)
 
-   local tbl = {}
-   for i = 1, max_bit_length do
-      if left_tbl[i] == 0 or right_tbl[i] == 0 then
-	 tbl[i] = 0
-      else
-	 tbl[i] = 1
-      end
-   end
+    local tbl = {}
+    for i = 1, max_bit_length do
+        if left_tbl[i] == 0 or right_tbl[i] == 0 then
+            tbl[i] = 0
+        else
+            tbl[i] = 1
+        end
+    end
 
-   return tbl_to_number(tbl)
+    return tbl_to_number(tbl)
 end
 
 local function bit_or(left, right)
-   local left_tbl = number_to_tbl(left)
-   local right_tbl = number_to_tbl(right)
+    local left_tbl = number_to_tbl(left)
+    local right_tbl = number_to_tbl(right)
 
-   local tbl = {}
-   for i = 1, max_bit_length do
-      if left_tbl[i] == 0 and right_tbl[i] == 0 then
-	 tbl[i] = 0
-      else
-	 tbl[i] = 1
-      end
-   end
+    local tbl = {}
+    for i = 1, max_bit_length do
+        if left_tbl[i] == 0 and right_tbl[i] == 0 then
+            tbl[i] = 0
+        else
+            tbl[i] = 1
+        end
+    end
 
-   return tbl_to_number(tbl)
+    return tbl_to_number(tbl)
 end
 
 local function bit_not(n)
-   local n_tbl = number_to_tbl(n)
+    local n_tbl = number_to_tbl(n)
 
-   local tbl = {}
-   for i = 1, max_bit_length do
-      if n_tbl[i] == 0 then
-	 tbl[i] = 1
-      else
-	 tbl[i] = 0
-      end
-   end
+    local tbl = {}
+    for i = 1, max_bit_length do
+        if n_tbl[i] == 0 then
+            tbl[i] = 1
+        else
+            tbl[i] = 0
+        end
+    end
 
-   return tbl_to_number(tbl)
+    return tbl_to_number(tbl)
 end
 
 local function bit_xor(left, right)
-   local left_tbl = number_to_tbl(left)
-   local right_tbl = number_to_tbl(right)
+    local left_tbl = number_to_tbl(left)
+    local right_tbl = number_to_tbl(right)
 
-   local tbl = {}
-   for i = 1, max_bit_length do
-      if left_tbl[i] == right_tbl[i] then
-	 tbl[i] = 0
-      else
-	 tbl[i] = 1
-      end
-   end
+    local tbl = {}
+    for i = 1, max_bit_length do
+        if left_tbl[i] == right_tbl[i] then
+            tbl[i] = 0
+        else
+            tbl[i] = 1
+        end
+    end
 
-   return tbl_to_number(tbl)
+    return tbl_to_number(tbl)
 end
 
 local function bit_rshift(n, shift)
-   check_int(n)
-   assert(shift >= 0, "negative shift count")
+    check_int(n)
+    assert(shift >= 0, "negative shift count")
 
-   local tbl = number_to_tbl(n)
-   local rshift_tbl = {}
+    local tbl = number_to_tbl(n)
+    local rshift_tbl = {}
 
-   for i = 1, max_bit_length do
-      local j = i + shift
-      if j > max_bit_length then
-	 j = max_bit_length
-      end
-      rshift_tbl[i] = tbl[j]
-   end
+    for i = 1, max_bit_length do
+        local j = i + shift
+        if j > max_bit_length then
+            j = max_bit_length
+        end
+        rshift_tbl[i] = tbl[j]
+    end
 
-   return tbl_to_number(rshift_tbl)
+    return tbl_to_number(rshift_tbl)
 end
 
 local function bit_lshift(n, shift)
-   check_int(n)
-   assert(shift >= 0, "negative shift count")
-   
-   local tbl = number_to_tbl(n)
-   local lshift_tbl = {}
+    check_int(n)
+    assert(shift >= 0, "negative shift count")
 
-   for i = 1, max_bit_length do
-      local j = i - shift
-      if j < 1 then
-	 lshift_tbl[i] = 0
-      else
-	 lshift_tbl[i] = tbl[j]
-      end
-   end
+    local tbl = number_to_tbl(n)
+    local lshift_tbl = {}
 
-   return tbl_to_number(lshift_tbl)
+    for i = 1, max_bit_length do
+        local j = i - shift
+        if j < 1 then
+            lshift_tbl[i] = 0
+        else
+            lshift_tbl[i] = tbl[j]
+        end
+    end
+
+    return tbl_to_number(lshift_tbl)
 end
 
 local bit = {
-   band = bit_and,
-   bor  = bit_or,
-   bnot = bit_not,
-   bxor = bit_xor,
-   brshift = bit_rshift,
-   blshift = bit_lshift,
+    band = bit_and,
+    bor  = bit_or,
+    bnot = bit_not,
+    bxor = bit_xor,
+    brshift = bit_rshift,
+    blshift = bit_lshift,
 }
 
-
+--[[
+无论 + 左右哪个是 string 类型的值，都会引发元方法的调用
+所以一旦调用这个方法，v1 v2 其中必定有一个 string 类型
+]]
 local string_meta = getmetatable("")
 string_meta.__add = function(v1, v2)
-   if type(v1) == "string" and type(v2) == "string" then
-      return v1 .. v2
-   end
-   return v1 + v2
+    assert(type(v1) == "string" and type(v2) == "string", "can not explicitly do " .. type(v1) .. " + " .. type(v2))
+    return v1 .. v2
 end
 
 
 local g_real_unpack = unpack or table.unpack
 
 local unpack = function(t)
-   if type(t) == "table" and t._is_list then
-      return g_real_unpack(t._data)
-   end
-   return g_real_unpack(t)
+    if type(t) == "table" and t._is_list then
+        return g_real_unpack(t._data)
+    end
+    return g_real_unpack(t)
 end
 
 local g_real_next = next
@@ -209,52 +210,52 @@ local g_real_next = next
 -- is exhausted, it is returned instead of raising StopIteration.
 -- fixme: support generator only for now
 local next = function(iter, default)
-   local v = nil
-   if iter._is_generator then
-      v = iter.next()
-   end
-   v = v or default
-   return v
+    local v = nil
+    if iter._is_generator then
+        v = iter.next()
+    end
+    v = v or default
+    return v
 end
 
 -- range(stop) -> range object
 -- range(start, stop[, step]) -> range object
 -- return a sequence of numbers from start to stop by step.
 local function range(...)
-   local p, l = {...}, select('#', ...)
-   assert(l ~= 0, 'range() expected 1 arguments, got 0')
+    local p, l = {...}, select('#', ...)
+    assert(l ~= 0, 'range() expected 1 arguments, got 0')
 
-   local start = nil
-   local stop = nil
-   local step = nil
-   
-   if l == 1 then
-      stop = p[1]
-   elseif l == 2 then
-      start = p[1]
-      stop = p[2]
-   else
-      start = p[1]
-      stop = p[2]
-      step = p[3]
-   end
+    local start = nil
+    local stop = nil
+    local step = nil
 
-   start = start or 0
-   step = step or 1
+    if l == 1 then
+        stop = p[1]
+    elseif l == 2 then
+        start = p[1]
+        stop = p[2]
+    else
+        start = p[1]
+        stop = p[2]
+        step = p[3]
+    end
 
-   assert(step ~= 0, 'range() arg 3 must not be zero')
+    start = start or 0
+    step = step or 1
 
-   local i = start
+    assert(step ~= 0, 'range() arg 3 must not be zero')
 
-   return function()
-      ret = i
-      if (step > 0 and i >= stop) or (step < 0 and i <= stop) then
-         return nil, nil
-      end
-      
-      i = i + step
-      return i, ret
-   end
+    local i = start
+
+    return function()
+        ret = i
+        if (step > 0 and i >= stop) or (step < 0 and i <= stop) then
+            return nil, nil
+        end
+
+        i = i + step
+        return i, ret
+    end
 end
 
 
@@ -266,21 +267,21 @@ local function _null()
 end
 
 local function _to_null(...)
-   local t, n = {...}, select('#', ...)
-   for k = 1, n do
-      local v = t[k]
-      if v == nil then t[k] = _null end
-   end
-   return unpack(t, 1, n)
+    local t, n = {...}, select('#', ...)
+    for k = 1, n do
+        local v = t[k]
+        if v == nil then t[k] = _null end
+    end
+    return unpack(t, 1, n)
 end
 
 local function _to_nil(...)
-   local t, n = {...}, select('#', ...)
-   for k = 1, n do
-      local v = t[k]
-      if v == _null then t[k] = nil end
-   end
-   return unpack(t, 1, n)
+    local t, n = {...}, select('#', ...)
+    for k = 1, n do
+        local v = t[k]
+        if v == _null then t[k] = nil end
+    end
+    return unpack(t, 1, n)
 end
 
 
@@ -290,271 +291,271 @@ end
 -- list(iterable) -> new list initialized from iterable's items
 local list = {}
 setmetatable(list, {
-                __call = function(_, t)
-                   local result = {}
+    __call = function(_, t)
+        local result = {}
 
-                   result._is_list = true
-                   result._data = {}
-		   result._len = 0
+        result._is_list = true
+        result._data = {}
+        result._len = 0
 
-		   if t ~= nil then
-		      if t.__iter__ then
-			 -- iterable
-			 local l = 0
-			 for _, v in t do
-			    l = l + 1
-			    result._data[l] = v
-			 end
-			 result._len = l
-		      else
-			 -- list literal
-			 local l = 0
-			 for k, v in pairs(t) do
-			    l = l + 1
-			    result._data[k] = _to_nil(v)
-			 end
-			 result._len = l
-		      end
-		   else
-		      -- list()
-		   end
+        if t ~= nil then
+            if t.__iter__ then
+                -- iterable
+                local l = 0
+                for _, v in t do
+                    l = l + 1
+                    result._data[l] = v
+                end
+                result._len = l
+            else
+                -- list literal
+                local l = 0
+                for k, v in pairs(t) do
+                    l = l + 1
+                    result._data[k] = _to_nil(v)
+                end
+                result._len = l
+            end
+        else
+        -- list()
+        end
 
-		   local py_to_lua_idx = function(i, size)
-		      if i >= 0 then
-			 i = i + 1
-			 if i > size then
-			    i = size
-			 end
-		      else
-			 i = i + size + 1
-			 if i < 1 then
-			    i = 1
-			 end
-		      end
-		      return i
-		   end
+        local py_to_lua_idx = function(i, size)
+            if i >= 0 then
+                i = i + 1
+                if i > size then
+                    i = size
+                end
+            else
+                i = i + size + 1
+                if i < 1 then
+                    i = 1
+                end
+            end
+            return i
+        end
 
-		   local py_idx = function(i, size)
-		      if i >= 0 then
-			 if i > size then
-			    i = size
-			 end
-		      else
-			 i = i + size
-			 if i < 0 then
-			    i = 0
-			 end
-		      end
-		      return i
-		   end
-                   
-                   local methods = {}
+        local py_idx = function(i, size)
+            if i >= 0 then
+                if i > size then
+                    i = size
+                end
+            else
+                i = i + size
+                if i < 0 then
+                    i = 0
+                end
+            end
+            return i
+        end
 
-		   -- L.append(object) -> None -- append object to end
-                   methods.append = function(self, value)
-		      self._len = self._len + 1
-		      self._data[self._len] = value
-                   end
+        local methods = {}
 
-		   -- L.clear() -> None -- remove all items from L
-                   methods.clear = function(self)
-		      self._len = 0
-                      self._data = {}
-                   end
+        -- L.append(object) -> None -- append object to end
+        methods.append = function(self, value)
+            self._len = self._len + 1
+            self._data[self._len] = value
+        end
 
-		   -- L.copy() -> list -- a shallow copy of L
-                   methods.copy = function(self)
-                      local c = list(self._data)
-		      c._len = self._len
-		      return c
-                   end
+        -- L.clear() -> None -- remove all items from L
+        methods.clear = function(self)
+            self._len = 0
+            self._data = {}
+        end
 
-		   -- L.count(value) -> integer -- return number of occurrences of value
-                   methods.count = function(self, value)
-                      local cnt = 0
-		      for i = 1, self._len do
-			 local v = self._data[i]
-			 if v == value then
-			    cnt = cnt + 1
-			 end
-		      end
-                      return cnt
-                   end
+        -- L.copy() -> list -- a shallow copy of L
+        methods.copy = function(self)
+            local c = list(self._data)
+            c._len = self._len
+            return c
+        end
 
-		   -- L.extend(iterable) -> None -- extend list by appending elements from the iterable
-                   methods.extend = function(self, iterable)
-                      for _, value in iterable do
-                         self.append(value)
-                      end
-                   end
+        -- L.count(value) -> integer -- return number of occurrences of value
+        methods.count = function(self, value)
+            local cnt = 0
+            for i = 1, self._len do
+                local v = self._data[i]
+                if v == value then
+                    cnt = cnt + 1
+                end
+            end
+            return cnt
+        end
 
-		   -- L.index(value, [start, [stop]]) -> integer -- return first index of value.
-		   -- 相当于在 L[start:stop] 中寻找 value
-		   -- 当 start stop 超过开始/结束的界限，算作界限本身
-                   methods.index = function(self, value, start, stop)
-		      local size = self._len
-		      
-		      if not start then
-			 start = 1
-		      else
-			 start = py_to_lua_idx(start, size)
-		      end
+        -- L.extend(iterable) -> None -- extend list by appending elements from the iterable
+        methods.extend = function(self, iterable)
+            for _, value in iterable do
+                self.append(value)
+            end
+        end
 
-		      if not stop then
-			 stop = size
-		      else
-			 stop = py_to_lua_idx(stop, size)
-		      end
+        -- L.index(value, [start, [stop]]) -> integer -- return first index of value.
+        -- 相当于在 L[start:stop] 中寻找 value
+        -- 当 start stop 超过开始/结束的界限，算作界限本身
+        methods.index = function(self, value, start, stop)
+            local size = self._len
 
-		      if start >= stop then
-			 return nil
-		      end
-		      
-                      for i = start, stop-1, 1 do
-                         if result._data[i] == value then
-                            return i - 1
-                         end
-                      end
-                   end
+            if not start then
+                start = 1
+            else
+                start = py_to_lua_idx(start, size)
+            end
 
-		   -- L.insert(index, object) -- insert object before index
-                   methods.insert = function(self, index, value)
-		      local size = self._len
+            if not stop then
+                stop = size
+            else
+                stop = py_to_lua_idx(stop, size)
+            end
 
-		      if index + 1 > size then
-			 index = size + 1
-		      else
-			 index = py_to_lua_idx(index, size)
-		      end
-		      
-		      self._len = self._len + 1
-		      for i = self._len, 1, -1 do
-			 if i > index then
-			    self._data[i] = self._data[i-1]
-			 end
-		      end
-		      self._data[index] = value
-                   end
+            if start >= stop then
+                return nil
+            end
 
-		   -- L.pop([index]) -> item -- remove and return item at index (default last).
-                   methods.pop = function(self, index)
-		      local size = self._len
-		      
-		      if not index then
-			 index = size
-		      else
-			 if index + 1 > size or index + 1 + size < 1 then
-			    error("list pop index out of range")
-			 else
-			    index = py_to_lua_idx(index, size)
-			 end
-		      end
-		      
-                      local value = result._data[index]
+            for i = start, stop-1, 1 do
+                if result._data[i] == value then
+                    return i - 1
+                end
+            end
+        end
 
-		      for i = index + 1, self._len do
-			 self._data[i-1] = self._data[i]
-		      end
-		      self._len = self._len - 1
+        -- L.insert(index, object) -- insert object before index
+        methods.insert = function(self, index, value)
+            local size = self._len
 
-                      return value
-                   end
+            if index + 1 > size then
+                index = size + 1
+            else
+                index = py_to_lua_idx(index, size)
+            end
 
-		   -- L.remove(value) -> None -- remove first occurrence of value.
-                   methods.remove = function(self, value)
-		      for i = 1, self._len do
-			 v = self._data[i]
-			 if value == v then
-			    self.pop(i - 1)    -- use py index
-			    break
-			 end
-		      end
-                   end
+            self._len = self._len + 1
+            for i = self._len, 1, -1 do
+                if i > index then
+                    self._data[i] = self._data[i-1]
+                end
+            end
+            self._data[index] = value
+        end
 
-		   -- L.reverse() -- reverse *IN PLACE*
-                   methods.reverse = function(self)
-                      local r = {}
-                      for i = 1, self._len do
-                         r[i] = self._data[self._len + 1 - i]
-                      end
-                      self._data = r
-                   end
+        -- L.pop([index]) -> item -- remove and return item at index (default last).
+        methods.pop = function(self, index)
+            local size = self._len
 
-		   -- L.sort(key=None, reverse=False) -> None -- stable sort *IN PLACE*
-		   -- TODO: sort 的参数是键值参数，目前暂时不支持，所以还无法传递 key 和 reverse
-		   -- TODO: key is a callable
-                   methods.sort = function(self, key, reverse)
-                      key = key or function (itself) return itself end
-                      reverse = reverse or false
+            if not index then
+                index = size
+            else
+                if index + 1 > size or index + 1 + size < 1 then
+                    error("list pop index out of range")
+                else
+                    index = py_to_lua_idx(index, size)
+                end
+            end
 
-		      assert(self.count(nil) == 0, "unorderable types: NoneType")
+            local value = result._data[index]
 
-                      table.sort(self._data, function(a, b)
-                                    if reverse then
-                                       return key(a) > key(b)
-                                    end
+            for i = index + 1, self._len do
+                self._data[i-1] = self._data[i]
+            end
+            self._len = self._len - 1
 
-                                    return key(a) < key(b)
-                      end)
-                   end
+            return value
+        end
 
-		   -- __iter__
-		   -- delegate to metatable __call
-		   methods.__iter__ = function(self)
-		      return self
-		   end
-		   
-                   local iterator_index = 0
+        -- L.remove(value) -> None -- remove first occurrence of value.
+        methods.remove = function(self, value)
+            for i = 1, self._len do
+                v = self._data[i]
+                if value == v then
+                    self.pop(i - 1)    -- use py index
+                    break
+                end
+            end
+        end
 
-                   setmetatable(result, {
-                                   __index = function(self, index)
-                                      if type(index) == "number" then
-					 index = py_to_lua_idx(index, self._len)
-                                         return rawget(self._data, index)
-                                      end
+        -- L.reverse() -- reverse *IN PLACE*
+        methods.reverse = function(self)
+            local r = {}
+            for i = 1, self._len do
+                r[i] = self._data[self._len + 1 - i]
+            end
+            self._data = r
+        end
 
-				      if type(index) == "table" and index._is_slice == true then
-					 local s = list()
-					 
-					 local start = index.start or 0
-					 start = py_idx(start, self._len)
-					 local stop = index.stop or self._len
-					 stop = py_idx(stop, self._len)
-					 local step = index.step or 1
+        -- L.sort(key=None, reverse=False) -> None -- stable sort *IN PLACE*
+        -- TODO: sort 的参数是键值参数，目前暂时不支持，所以还无法传递 key 和 reverse
+        -- TODO: key is a callable
+        methods.sort = function(self, key, reverse)
+            key = key or function (itself) return itself end
+            reverse = reverse or false
 
-					 for _, i in range(start, stop, step) do
-					    s.append(self[i])
-					 end
-					 return s
-				      end
+            assert(self.count(nil) == 0, "unorderable types: NoneType")
 
-                                      return function(...)
-					 return methods[index](self, ...)
-				      end
-                                   end,
-				   -- only number index is permitted in python
-                                   __newindex = function(self, index, value)
-				      index = py_to_lua_idx(index, self._len)
-                                      rawset(self._data, index, value)
-                                   end,
-                                   __call = function(self, _, idx)
-                                      if idx == nil then
-                                         iterator_index = 0
-                                      end
+            table.sort(self._data, function(a, b)
+                if reverse then
+                    return key(a) > key(b)
+                end
 
-				      iterator_index = iterator_index + 1
-                                      local v = self._data[iterator_index]
+                return key(a) < key(b)
+            end)
+        end
 
-				      if iterator_index > self._len then
-					 return nil, nil
-				      else
-					 return iterator_index, v
-				      end
-                                   end,
-                   })
+        -- __iter__
+        -- delegate to metatable __call
+        methods.__iter__ = function(self)
+            return self
+        end
 
-                   return result
-                end,
+        local iterator_index = 0
+
+        setmetatable(result, {
+            __index = function(self, index)
+                if type(index) == "number" then
+                    index = py_to_lua_idx(index, self._len)
+                    return rawget(self._data, index)
+                end
+
+                if type(index) == "table" and index._is_slice == true then
+                    local s = list()
+
+                    local start = index.start or 0
+                    start = py_idx(start, self._len)
+                    local stop = index.stop or self._len
+                    stop = py_idx(stop, self._len)
+                    local step = index.step or 1
+
+                    for _, i in range(start, stop, step) do
+                        s.append(self[i])
+                    end
+                    return s
+                end
+
+                return function(...)
+                    return methods[index](self, ...)
+                end
+            end,
+            -- only number index is permitted in python
+            __newindex = function(self, index, value)
+                index = py_to_lua_idx(index, self._len)
+                rawset(self._data, index, value)
+            end,
+            __call = function(self, _, idx)
+                if idx == nil then
+                    iterator_index = 0
+                end
+
+                iterator_index = iterator_index + 1
+                local v = self._data[iterator_index]
+
+                if iterator_index > self._len then
+                    return nil, nil
+                else
+                    return iterator_index, v
+                end
+            end,
+        })
+
+        return result
+    end,
 })
 
 -- bool(x) -> bool
@@ -562,18 +563,18 @@ setmetatable(list, {
 -- the builtins True and False are the only two instances of the class bool.
 -- the class bool is a subclass of the class int, and cannot be subclassed.
 local function bool(x)
-   if x == false or x == nil or x == 0 or x == '' then
-      return false
-   end
+    if x == false or x == nil or x == 0 or x == '' then
+        return false
+    end
 
-   if type(x) == "table" then
-      if x._is_list or x._is_dict then
-         return g_real_next(x._data) ~= nil
-      end
-   end
+    if type(x) == "table" then
+        if x._is_list or x._is_dict then
+            return g_real_next(x._data) ~= nil
+        end
+    end
 
-   return true
-end 
+    return true
+end
 
 
 --[[
@@ -589,32 +590,32 @@ local abs = math.abs
 -- return true if bool(x) is true for all values x in the iterable.
 -- if the iterable is empty, return True.
 local function all(iterable)
-   for _, element in iterable do
-      if not bool(element) then
-         return false
-      end
-   end
-   return true
+    for _, element in iterable do
+        if not bool(element) then
+            return false
+        end
+    end
+    return true
 end
 
 -- any(iterable) -> bool
 -- return true if bool(x) is true for any x in the iterable.
 -- if the iterable is empty, return False.
 local function any(iterable)
-   for _, element in iterable do
-      if bool(element) then
-         return true
-      end
-   end
-   return false
+    for _, element in iterable do
+        if bool(element) then
+            return true
+        end
+    end
+    return false
 end
 
 -- divmod(x, y) -> (div, mod)
 -- return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.
 local function divmod(a, b)
-   local d = math.floor(a / b)
-   local m = a - d * b
-   return d, m
+    local d = math.floor(a / b)
+    local m = a - d * b
+    return d, m
 end
 
 -- ascii(object) -> string
@@ -623,7 +624,7 @@ end
 -- repr() using \x, \u or \U escapes.  This generates a string similar
 -- to that returned by repr() in Python 2.
 local function ascii(obj)
-   -- todo
+-- todo
 end
 
 -- bin(number) -> string
@@ -631,19 +632,19 @@ end
 -- >>> bin(2796202)
 -- '0b1010101010101010101010'
 local function bin(num)
-   assert(type(num) == 'number', 'num is not a number in bin()')
-   assert(math.floor(num) == num, 'num is a float in bin()')
+    assert(type(num) == 'number', 'num is not a number in bin()')
+    assert(math.floor(num) == num, 'num is a float in bin()')
 
-   local prefix = '0b'
+    local prefix = '0b'
 
-   local b = ''
-   local m = 0
-   repeat
-      num, m = divmod(num, 2)
-      b = tostring(m) .. b
-   until num == 0
+    local b = ''
+    local m = 0
+    repeat
+        num, m = divmod(num, 2)
+        b = tostring(m) .. b
+    until num == 0
 
-   return prefix .. b
+    return prefix .. b
 end
 
 -- callable(object) -> bool
@@ -651,20 +652,20 @@ end
 -- note that classes are callable, as are instances of classes with a
 -- __call__() method.
 local function callable(obj)
-   local obj_type = type(obj)
-   if obj_type == "function" then
-      return true
-   end
-   if obj_type == "table" then
-      if obj._is_list or obj._is_dict then
-	 return false
-      end
-      
-      local meta = getmetatable(obj)
-      return type(meta.__call) == "function" 
-   end
+    local obj_type = type(obj)
+    if obj_type == "function" then
+        return true
+    end
+    if obj_type == "table" then
+        if obj._is_list or obj._is_dict then
+            return false
+        end
 
-   return false
+        local meta = getmetatable(obj)
+        return type(meta.__call) == "function"
+    end
+
+    return false
 end
 
 
@@ -675,20 +676,20 @@ end
 -- enumerate is useful for obtaining an indexed list:
 --     (0, seq[0]), (1, seq[1]), (2, seq[2]), ...
 local function enumerate(t, start)
-   -- assume t is a list
-   start = start or 0
+    -- assume t is a list
+    start = start or 0
 
-   local i, v = t(nil, nil)
-   return function()
-      local index, value = i, v
-      if index == nil then
-         return nil
-      end
+    local i, v = t(nil, nil)
+    return function()
+        local index, value = i, v
+        if index == nil then
+            return nil
+        end
 
-      i, v = t(nil, i)
+        i, v = t(nil, i)
 
-      return index, index + start - 1, value
-   end
+        return index, index + start - 1, value
+    end
 end
 
 
@@ -696,15 +697,15 @@ end
 -- return an iterator yielding those items of iterable for which function(item)
 -- is true. If function is None, return the items that are true.
 local function filter(func, iterable)
-   func = func or bool
-   -- fixme: use list for now, no lazy
-   local l = list {}
-   for _, item in iterable do
-      if func(item) then
-	 l.append(item)
-      end
-   end
-   return l
+    func = func or bool
+    -- fixme: use list for now, no lazy
+    local l = list {}
+    for _, item in iterable do
+        if func(item) then
+            l.append(item)
+        end
+    end
+    return l
 end
 
 
@@ -712,9 +713,9 @@ end
 -- float(x) -> floating point number
 -- convert a string or number to a floating point number, if possible.
 local function float(x)
-   local n = tonumber(x)
-   assert(n ~= nil, "could not convert string to float " .. tostring(x))
-   return n
+    local n = tonumber(x)
+    assert(n ~= nil, "could not convert string to float " .. tostring(x))
+    return n
 end
 
 
@@ -723,37 +724,37 @@ end
 --   >>> hex(3735928559)
 --   '0xdeadbeef'
 local function hex(num)
-   assert(type(num) == 'number', 'num is not a number in hex(num)')
-   assert(math.floor(num) == num, 'num is a float in hex(num)')
+    assert(type(num) == 'number', 'num is not a number in hex(num)')
+    assert(math.floor(num) == num, 'num is a float in hex(num)')
 
-   local int_hex_map = {
-      [0] = '0',
-      [1] = '1',
-      [2] = '2',
-      [3] = '3',
-      [4] = '4',
-      [5] = '5',
-      [6] = '6',
-      [7] = '7',
-      [8] = '8',
-      [9] = '9',
-      [10] = 'a',
-      [11] = 'b',
-      [12] = 'c',
-      [13] = 'd',
-      [14] = 'e',
-      [15] = 'f',
-   }
+    local int_hex_map = {
+        [0] = '0',
+        [1] = '1',
+        [2] = '2',
+        [3] = '3',
+        [4] = '4',
+        [5] = '5',
+        [6] = '6',
+        [7] = '7',
+        [8] = '8',
+        [9] = '9',
+        [10] = 'a',
+        [11] = 'b',
+        [12] = 'c',
+        [13] = 'd',
+        [14] = 'e',
+        [15] = 'f',
+    }
 
-   local prefix = '0x'
-   local m = 0
-   local h = ''
-   repeat
-      num, m = divmod(num, 16)
-      h = int_hex_map[m] .. h
-   until num == 0
+    local prefix = '0x'
+    local m = 0
+    local h = ''
+    repeat
+        num, m = divmod(num, 16)
+        h = int_hex_map[m] .. h
+    until num == 0
 
-   return prefix .. h
+    return prefix .. h
 end
 
 
@@ -771,61 +772,61 @@ end
 --   >>> int('0b100', base=0)
 --   4
 local function int(x, base)
-   if x == nil then
-      return 0
-   end
+    if x == nil then
+        return 0
+    end
 
-   if type(x) == 'number' then
-      if x >= 0 then
-	 return math.floor(x)
-      else
-	 return math.ceil(x)
-      end
-   end
+    if type(x) == 'number' then
+        if x >= 0 then
+            return math.floor(x)
+        else
+            return math.ceil(x)
+        end
+    end
 
-   assert(type(x) == 'string', "int() can't convert non-string with explicit base")
+    assert(type(x) == 'string', "int() can't convert non-string with explicit base")
 
-   base = base or 10
+    base = base or 10
 
-   if base == 0 then
-      local is_neg = string.find(x, '-') ~= nil
-      local pos = string.gsub(x, '-', '')
+    if base == 0 then
+        local is_neg = string.find(x, '-') ~= nil
+        local pos = string.gsub(x, '-', '')
 
-      if string.find(x, '0x') then
-	 base = 16
-	 pos = string.gsub(pos, '0x', '')
-      elseif string.find(x, '0b') then
-	 base = 2
-	 pos = string.gsub(pos, '0b', '')
-      else
-	 base = 10
-      end
-      
-      local n = tonumber(pos, base)
+        if string.find(x, '0x') then
+            base = 16
+            pos = string.gsub(pos, '0x', '')
+        elseif string.find(x, '0b') then
+            base = 2
+            pos = string.gsub(pos, '0b', '')
+        else
+            base = 10
+        end
 
-      assert(n ~= nil, "invalid literal for int(): " .. x)
+        local n = tonumber(pos, base)
 
-      if is_neg then
-	 n = -n
-      end
+        assert(n ~= nil, "invalid literal for int(): " .. x)
 
-      return n
-   else
-      assert(base >= 2 and base <= 40, "int() base must be >= 2 and <= 36")
-      
-      local is_neg = string.find(x, '-') ~= nil
-      local pos = string.gsub(x, '-', '')
-      local n = tonumber(pos, base)
+        if is_neg then
+            n = -n
+        end
 
-      assert(n ~= nil, "invalid literal for int(): " .. x)
+        return n
+    else
+        assert(base >= 2 and base <= 40, "int() base must be >= 2 and <= 36")
 
-      if is_neg then
-	 n = -n
-      end
+        local is_neg = string.find(x, '-') ~= nil
+        local pos = string.gsub(x, '-', '')
+        local n = tonumber(pos, base)
 
-      return n
-   end
-    
+        assert(n ~= nil, "invalid literal for int(): " .. x)
+
+        if is_neg then
+            n = -n
+        end
+
+        return n
+    end
+
 end
 
 
@@ -834,90 +835,90 @@ end
 -- len(object)
 -- return the number of items of a sequence or collection.
 local function len(t)
-   if type(t._data) == "table" then
-      if t._is_list == true or t._is_tuple == true then
-	 return t._len
-      else
-	 local l = 0
-	 for k, v in pairs(t._data) do
-	    l = l + 1
-	 end
-	 return l
-      end
-   end
+    if type(t._data) == "table" then
+        if t._is_list == true or t._is_tuple == true then
+            return t._len
+        else
+            local l = 0
+            for k, v in pairs(t._data) do
+                l = l + 1
+            end
+            return l
+        end
+    end
 
-   return #t
+    return #t
 end
 
 
 -- different from coroutine.wrap
 -- the wrapper return code and res
 local function coroutine_wrap(func)
-   local co = coroutine.create(func)
-   local code, res = coroutine.resume(co)
-   local ret_code
-   local ret_res
-   return function()
-      local next_code, next_res = coroutine.resume(co)
+    local co = coroutine.create(func)
+    local code, res = coroutine.resume(co)
+    local ret_code
+    local ret_res
+    return function()
+        local next_code, next_res = coroutine.resume(co)
 
-      if next_code == false then
-	 ret_code = nil
-      else
-	 ret_code = code
-      end
-      ret_res = res
-      
-      code = next_code
-      res = next_res
-      
-      return ret_code, ret_res
-   end
+        if next_code == false then
+            ret_code = nil
+        else
+            ret_code = code
+        end
+        ret_res = res
+
+        code = next_code
+        res = next_res
+
+        return ret_code, ret_res
+    end
 end
 
 
 -- generator (and meta) class
 local meta_generator = {}
 setmetatable(meta_generator, {
-                __call = function(_, t)
-                   local result = {}
+    __call = function(_, t)
+        local result = {}
 
-                   result._is_generator = true
-		   result._func = t
+        result._is_generator = true
+        result._func = t
 
-		   local methods = {}
+        local methods = {}
 
-                   methods.next = function(self)
-                      local stat, value = coroutine.resume(self._generator)
-		      return value
-                   end
-		   		   
-                   methods.send = function(self, ...)
-                      local stat, value = coroutine.resume(self._generator, ...)
-		      return value
-                   end
+        methods.next = function(self)
+            local stat, value = coroutine.resume(self._generator)
+            return value
+        end
 
-		   methods.close = function(self)
-		   end
+        methods.send = function(self, ...)
+            local stat, value = coroutine.resume(self._generator, ...)
+            return value
+        end
 
-                   setmetatable(result, {
-                                   __call = function(self)
-				      local g = {}
-				      g._generator = coroutine.create(self._func)
+        methods.close = function(self)
+        end
 
-				      setmetatable(g, {
-						      __index = function(self, index)
-							 return function(...)
-							    return methods[index](self, ...)
-							 end
-						      end,
-				      })
-				      
-				      return g
-                                   end,
-                   })
+        setmetatable(result, {
+            __call = function(self)
+                local g = {}
+                g._generator = coroutine.create(self._func)
 
-                   return result
-                end,
+                setmetatable(g, {
+                    __index = function(self, index)
+                        return function(...)
+                            return methods[index](self, ...)
+                        end
+                    end,
+                })
+
+                return g
+            end,
+        })
+
+        return result
+    end,
 })
 
 
@@ -926,31 +927,31 @@ setmetatable(meta_generator, {
 -- make an iterator that computes the function using arguments from
 -- each of the iterables.  Stops when the shortest iterable is exhausted.
 local function map(func, ...)
-   local iterables = list {...}
-   local lists = list {}
-   
-   local iter_num = len(iterables)
-   local min_len = math.huge
+    local iterables = list {...}
+    local lists = list {}
 
-   for _, it in iterables do
-      lists.append(list(it))
-      
-      local l = len(list(it))
-      if l < min_len then
-	 min_len = l
-      end
-   end
-   
-   local res = list {}
-   for _, nth in range(min_len) do
-      local param = {}
-      for _, ith in range(iter_num) do
-	 param[#param+1] = lists[ith][nth]
-      end
-      res.append(func(unpack(param)))
-   end
+    local iter_num = len(iterables)
+    local min_len = math.huge
 
-   return res
+    for _, it in iterables do
+        lists.append(list(it))
+
+        local l = len(list(it))
+        if l < min_len then
+            min_len = l
+        end
+    end
+
+    local res = list {}
+    for _, nth in range(min_len) do
+        local param = {}
+        for _, ith in range(iter_num) do
+            param[#param+1] = lists[ith][nth]
+        end
+        res.append(func(unpack(param)))
+    end
+
+    return res
 end
 
 
@@ -960,19 +961,19 @@ end
 --    >>> oct(342391)
 --    '0o1234567'
 local function oct(num)
-   assert(type(num) == 'number', 'num is not a number in hex()')
-   assert(math.floor(num) == num, 'num is a float in hex()')
+    assert(type(num) == 'number', 'num is not a number in hex()')
+    assert(math.floor(num) == num, 'num is a float in hex()')
 
-   local prefix = '0o'
+    local prefix = '0o'
 
-   local b = ''
-   local m = 0
-   repeat
-      num, m = divmod(num, 8)
-      b = tostring(m) .. b
-   until num == 0
+    local b = ''
+    local m = 0
+    repeat
+        num, m = divmod(num, 8)
+        b = tostring(m) .. b
+    until num == 0
 
-   return prefix .. b
+    return prefix .. b
 end
 
 
@@ -984,35 +985,35 @@ end
 -- the provided iterable is empty.
 -- with two or more arguments, return the largest argument.
 local function max(arg1, ...)
-   local rest = list {...}
-   local iterable = arg1
-   if len(rest) ~= 0 then
-      rest.append(arg1)
-      iterable = rest
-   end
+    local rest = list {...}
+    local iterable = arg1
+    if len(rest) ~= 0 then
+        rest.append(arg1)
+        iterable = rest
+    end
 
-   local default = nil
-   if len(iterable) == 0 then
-      return default
-   end
+    local default = nil
+    if len(iterable) == 0 then
+        return default
+    end
 
-   local m = nil
-   for item in iterable do
-      if m == nil then
-	 m = item
-      else
-	 if item > m then
-	    m = item
-	 end
-      end
-   end
+    local m = nil
+    for item in iterable do
+        if m == nil then
+            m = item
+        else
+            if item > m then
+                m = item
+            end
+        end
+    end
 
-   return m
+    return m
 end
 
 
 local function memoryview(object)
-   -- not support
+-- not support
 end
 
 
@@ -1023,30 +1024,30 @@ end
 -- the provided iterable is empty.
 -- with two or more arguments, return the smallest argument.
 local function min(arg1, ...)
-   local rest = list {...}
-   local iterable = arg1
-   if len(rest) ~= 0 then
-      rest.append(arg1)
-      iterable = rest
-   end
+    local rest = list {...}
+    local iterable = arg1
+    if len(rest) ~= 0 then
+        rest.append(arg1)
+        iterable = rest
+    end
 
-   local default = nil
-   if len(iterable) == 0 then
-      return default
-   end
+    local default = nil
+    if len(iterable) == 0 then
+        return default
+    end
 
-   local m = nil
-   for item in iterable do
-      if m == nil then
-	 m = item
-      else
-	 if item < m then
-	    m = item
-	 end
-      end
-   end
+    local m = nil
+    for item in iterable do
+        if m == nil then
+            m = item
+        else
+            if item < m then
+                m = item
+            end
+        end
+    end
 
-   return m
+    return m
 end
 
 
@@ -1058,30 +1059,30 @@ end
 -- of the sequence in the calculation, and serves as a default when the
 -- sequence is empty.
 local function reduce(func, seq, init)
-   if len(seq) == 0 then
-      return init
-   end
+    if len(seq) == 0 then
+        return init
+    end
 
-   local r = init
-   for e in seq do
-      if init == nil then
-	 r = e
-	 init = true -- not nil
-      else
-	 r = func(r, e)
-      end
-   end
+    local r = init
+    for e in seq do
+        if init == nil then
+            r = e
+            init = true -- not nil
+        else
+            r = func(r, e)
+        end
+    end
 
-   return r
+    return r
 end
 
 
 -- reversed(sequence) -> reverse iterator over values of the sequence
 -- return a reverse iterator
 local function reversed(seq)
-   local l = list(seq)
-   l.reverse()
-   return l
+    local l = list(seq)
+    l.reverse()
+    return l
 end
 
 
@@ -1096,202 +1097,202 @@ end
 --     in the keyword argument list.  For example:  dict(one=1, two=2)
 local dict = {}
 setmetatable(dict, {
-		__call = function(_, t)
-		   local result = {}
+    __call = function(_, t)
+        local result = {}
 
-		   result._is_dict = true
-		   result._data = {}
+        result._is_dict = true
+        result._data = {}
 
-		   if t ~= nil then
-		      if t._is_dict then
-			 -- dict(d)
-			 for _, k, v in t.items() do
-			    result._data[_to_null(k)] = _to_null(v)
-			 end
-		      elseif t.__iter__ then
-			 -- dict(iterable)
-			 -- TODO: ?
-			 for k, v in t do
-			    result._data[k] = v
-			 end
-		      else
-			 -- dict literal
-			 -- None has been _null, both in keys and values
-			 for k, v in pairs(t) do
-			    result._data[k] = v
-			 end
-		      end
-		   else
-		      -- dict()
-		   end
-		   
+        if t ~= nil then
+            if t._is_dict then
+                -- dict(d)
+                for _, k, v in t.items() do
+                    result._data[_to_null(k)] = _to_null(v)
+                end
+            elseif t.__iter__ then
+                -- dict(iterable)
+                -- TODO: ?
+                for k, v in t do
+                    result._data[k] = v
+                end
+            else
+                -- dict literal
+                -- None has been _null, both in keys and values
+                for k, v in pairs(t) do
+                    result._data[k] = v
+                end
+            end
+        else
+        -- dict()
+        end
 
-		   local methods = {}
 
-		   -- D.clear() -> None.  Remove all items from D.
-		   methods.clear = function(self)
-		      self._data = {}
-		   end
+        local methods = {}
 
-		   -- D.copy() -> a shallow copy of D
-		   methods.copy = function(self)
-		      return dict(self._data)
-		   end
+        -- D.clear() -> None.  Remove all items from D.
+        methods.clear = function(self)
+            self._data = {}
+        end
 
-		   -- d.fromkeys(iterable, value=None, /)
-		   -- returns a new dict with keys from iterable and values equal to value.
-		   methods.fromkeys = function(self, keys, value)
-		      value = _to_null(value or nil)
+        -- D.copy() -> a shallow copy of D
+        methods.copy = function(self)
+            return dict(self._data)
+        end
 
-		      local d = dict()
-		      for _, k in keys do
-			 d._data[_to_null(k)] = value
-		      end
-		      return d
-		   end
+        -- d.fromkeys(iterable, value=None, /)
+        -- returns a new dict with keys from iterable and values equal to value.
+        methods.fromkeys = function(self, keys, value)
+            value = _to_null(value or nil)
 
-		   -- D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
-		   methods.get = function(self, key, default)
-		      value = self._data[_to_null(key)] or _to_null(default or nil)
-		      return _to_nil(value)
-		   end
+            local d = dict()
+            for _, k in keys do
+                d._data[_to_null(k)] = value
+            end
+            return d
+        end
 
-		   -- D.items() -> a set-like object providing a view on D's items
-		   methods.items = function(self)
-		      return function(_, idx)
-			 idx, v = g_real_next(self._data, idx)
-			 return idx, _to_nil(idx), _to_nil(v)
-		      end
-		   end
+        -- D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+        methods.get = function(self, key, default)
+            value = self._data[_to_null(key)] or _to_null(default or nil)
+            return _to_nil(value)
+        end
 
-		   -- D.keys() -> a set-like object providing a view on D's keys
-		   methods.keys = function(self)
-		      return function(_, idx) 
-			 idx, v = g_real_next(self._data, idx)
-			 return idx, _to_nil(idx)
-		      end
-		   end
+        -- D.items() -> a set-like object providing a view on D's items
+        methods.items = function(self)
+            return function(_, idx)
+                idx, v = g_real_next(self._data, idx)
+                return idx, _to_nil(idx), _to_nil(v)
+            end
+        end
 
-		   -- D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
-		   -- if key is not found, d is returned if given, otherwise KeyError is raised
-		   methods.pop = function(self, key, default)
-		      value = self._data[_to_null(key)] or _to_null(default or nil)
-		      self._data[_to_null(key)] = nil
-		      return _to_nil(value)
-		   end
+        -- D.keys() -> a set-like object providing a view on D's keys
+        methods.keys = function(self)
+            return function(_, idx)
+                idx, v = g_real_next(self._data, idx)
+                return idx, _to_nil(idx)
+            end
+        end
 
-		   -- D.popitem() -> (k, v), remove and return some (key, value) pair as a
-		   -- 2-tuple; but raise KeyError if D is empty.
-		   methods.popitem = function(self)
-		      local key, value = g_real_next(self._data)
-		      if key ~= nil then
-			 self._data[key] = nil
-		      end
+        -- D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+        -- if key is not found, d is returned if given, otherwise KeyError is raised
+        methods.pop = function(self, key, default)
+            value = self._data[_to_null(key)] or _to_null(default or nil)
+            self._data[_to_null(key)] = nil
+            return _to_nil(value)
+        end
 
-		      return _to_nil(key), _to_nil(value)
-		   end
+        -- D.popitem() -> (k, v), remove and return some (key, value) pair as a
+        -- 2-tuple; but raise KeyError if D is empty.
+        methods.popitem = function(self)
+            local key, value = g_real_next(self._data)
+            if key ~= nil then
+                self._data[key] = nil
+            end
 
-		   -- D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
-		   methods.setdefault = function(self, key, default)
-		      if self._data[_to_null(key)] == nil then
-			 self._data[_to_null(key)] = _to_null(default)
-		      end
+            return _to_nil(key), _to_nil(value)
+        end
 
-		      return self._data[_to_null(key)]
-		   end
+        -- D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+        methods.setdefault = function(self, key, default)
+            if self._data[_to_null(key)] == nil then
+                self._data[_to_null(key)] = _to_null(default)
+            end
 
-		   -- D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
-		   -- if E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
-		   -- if E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
-		   -- in either case, this is followed by: for k in F:  D[k] = F[k]
-		   methods.update = function(self, t)
-		      if t._is_dict ~= true then
-			 return
-		      end
+            return self._data[_to_null(key)]
+        end
 
-		      for _, k, v in t.items() do
-			 self._data[_to_null(k)] = _to_null(v)
-		      end
-		   end
+        -- D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+        -- if E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+        -- if E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+        -- in either case, this is followed by: for k in F:  D[k] = F[k]
+        methods.update = function(self, t)
+            if t._is_dict ~= true then
+                return
+            end
 
-		   -- D.values() -> an object providing a view on D's values
-		   methods.values = function(self)
-		      return function(_, idx) 
-			 idx, v = g_real_next(self._data, idx)
-			 return idx, _to_nil(v)
-		      end
-		   end
+            for _, k, v in t.items() do
+                self._data[_to_null(k)] = _to_null(v)
+            end
+        end
 
-		   -- __iter__()
-		   -- delegate to dict __call
-		   methods.__iter__ = function(self)
-		      return self
-		   end
-		   
-		   setmetatable(result, {
-				   __index = function(self, index)
-				      if self._data[_to_null(index)] ~= nil then
-					 return _to_nil(self._data[_to_null(index)])
-				      end
-				      
-				      if methods[index] ~= nil then
-					 return function(...)
-					    return methods[index](self, ...)
-					 end
-				      end
-				      return nil
-				   end,
-				   __newindex = function(self, index, value)
-				      self._data[_to_null(index)] = _to_null(value)
-				   end,
-				   __call = function(self, _, idx)
-				      idx, _ = g_real_next(self._data, idx)
-				      return idx, _to_nil(idx)
-				   end,
-		   })
-		   
-		   return result
-		end,
+        -- D.values() -> an object providing a view on D's values
+        methods.values = function(self)
+            return function(_, idx)
+                idx, v = g_real_next(self._data, idx)
+                return idx, _to_nil(v)
+            end
+        end
+
+        -- __iter__()
+        -- delegate to dict __call
+        methods.__iter__ = function(self)
+            return self
+        end
+
+        setmetatable(result, {
+            __index = function(self, index)
+                if self._data[_to_null(index)] ~= nil then
+                    return _to_nil(self._data[_to_null(index)])
+                end
+
+                if methods[index] ~= nil then
+                    return function(...)
+                        return methods[index](self, ...)
+                    end
+                end
+                return nil
+            end,
+            __newindex = function(self, index, value)
+                self._data[_to_null(index)] = _to_null(value)
+            end,
+            __call = function(self, _, idx)
+                idx, _ = g_real_next(self._data, idx)
+                return idx, _to_nil(idx)
+            end,
+        })
+
+        return result
+    end,
 })
 
 
 
 local function staticmethod(old_fun)
-   local wrapper = function(first, ...)
-      return old_fun(...)
-   end
+    local wrapper = function(first, ...)
+        return old_fun(...)
+    end
 
-   return wrapper
+    return wrapper
 end
 
 local function operator_in(item, items)
-   if type(items) == "table" then
-      for _, v in items do
-	 if v == item then
-	    return true
-	 end
-      end
-   elseif type(items) == "string" and type(item) == "string" then
-      return string.find(items, item, 1, true) ~= nil
-   end
+    if type(items) == "table" then
+        for _, v in items do
+            if v == item then
+                return true
+            end
+        end
+    elseif type(items) == "string" and type(item) == "string" then
+        return string.find(items, item, 1, true) ~= nil
+    end
 
-   return false
+    return false
 end
 
 local function operator_is(a, b)
-   local type_a = type(a)
-   local type_b = type(b)
+    local type_a = type(a)
+    local type_b = type(b)
 
-   if type_a ~= type_b then
-      return false
-   end
+    if type_a ~= type_b then
+        return false
+    end
 
-   if type_a == "table" then
-      -- memory address
-      return tostring(a) == tostring(b)
-   end
+    if type_a == "table" then
+        -- memory address
+        return tostring(a) == tostring(b)
+    end
 
-   return a == b
+    return a == b
 end
 
 
@@ -1307,12 +1308,12 @@ object.__mro__ = list {object}
 -- with two arguments, equivalent to x**y.  With three arguments,
 -- equivalent to (x**y) % z, but may be more efficient (e.g. for ints).
 local function pow(x, y, z)
-   local p = math.pow(x, y)
-   if z == nil then
-      return p
-   else
-      return math.fmod(p, z)
-   end
+    local p = math.pow(x, y)
+    if z == nil then
+        return p
+    else
+        return math.fmod(p, z)
+    end
 end
 
 -- print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
@@ -1324,7 +1325,7 @@ end
 -- flush: whether to forcibly flush the stream.
 local old_print = print
 local function print(...)
-   old_print(...)
+    old_print(...)
 end
 
 
@@ -1333,17 +1334,17 @@ end
 -- this returns an int when called with one argument, otherwise the
 -- same type as the number. ndigits may be negative.
 local function round(number, ndigits)
-   ndigits = ndigits or 0
+    ndigits = ndigits or 0
 
-   local shift = math.pow(10, ndigits)
-   local n = number * shift
-   local i, f = math.modf(n)
-   if f >= 0.5 then
-      i = i + 1
-   end
+    local shift = math.pow(10, ndigits)
+    local n = number * shift
+    local i, f = math.modf(n)
+    if f >= 0.5 then
+        i = i + 1
+    end
 
-   n = i / shift
-   return n
+    n = i / shift
+    return n
 end
 
 
@@ -1353,215 +1354,215 @@ end
 -- ref: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
 local set = {}
 setmetatable(set, {
-                __call = function(_, t)
-                   local result = {}
+    __call = function(_, t)
+        local result = {}
 
-                   result._is_set = true
-                   result._data = {}
+        result._is_set = true
+        result._data = {}
 
-		   if t ~= nil then
-		      if t.__iter__ then
-			 -- iterable
-			 for _, v in t do
-			    result._data[_to_null(v)] = true
-			 end
-		      else
-			 -- set literal
-			 -- None has passed to _null
-			 for _, v in pairs(t) do
-			    result._data[v] = true
-			 end
-		      end
-		   else
-		      -- set()
-		   end
+        if t ~= nil then
+            if t.__iter__ then
+                -- iterable
+                for _, v in t do
+                    result._data[_to_null(v)] = true
+                end
+            else
+                -- set literal
+                -- None has passed to _null
+                for _, v in pairs(t) do
+                    result._data[v] = true
+                end
+            end
+        else
+        -- set()
+        end
 
-                   local methods = {}
+        local methods = {}
 
-		   -- add an element to a set.
-		   -- this has no effect if the element is already present.
-                   methods.add = function(self, elem)
-		      self._data[_to_null(elem)] = true
-                   end
+        -- add an element to a set.
+        -- this has no effect if the element is already present.
+        methods.add = function(self, elem)
+            self._data[_to_null(elem)] = true
+        end
 
-		   -- remove all elements from this set.
-                   methods.clear = function(self)
-                      self._data = {}
-                   end
+        -- remove all elements from this set.
+        methods.clear = function(self)
+            self._data = {}
+        end
 
-		   -- return a shallow copy of a set.
-                   methods.copy = function(self)
-                      return set(self)
-                   end
+        -- return a shallow copy of a set.
+        methods.copy = function(self)
+            return set(self)
+        end
 
-		   -- return the difference of two or more sets as a new set.
-		   -- (i.e. all elements that are in this set but not the others.)
-                   methods.difference = function(self, ...)
-		      local diff_set = self.copy()
-		      
-		      local others = list {...}
-		      for _, other_set in others do
-			 for _, elem in other_set do
-			    if operator_in(elem, diff_set) then
-			       diff_set.remove(elem)
-			    end
-			 end
-		      end
+        -- return the difference of two or more sets as a new set.
+        -- (i.e. all elements that are in this set but not the others.)
+        methods.difference = function(self, ...)
+            local diff_set = self.copy()
 
-		      return diff_set
-                   end
+            local others = list {...}
+            for _, other_set in others do
+                for _, elem in other_set do
+                    if operator_in(elem, diff_set) then
+                        diff_set.remove(elem)
+                    end
+                end
+            end
 
-		   -- remove all elements of another set from this set.
-		   methods.difference_update = function(self, ...)
-		      local others = list {...}
-		      for _, other_set in others do
-			 for _, elem in other_set do
-			    if operator_in(elem, self) then
-			       self.remove(elem)
-			    end
-			 end
-		      end
-		   end
+            return diff_set
+        end
 
-		   -- remove an element from a set if it is a member.
-		   -- if the element is not a member, do nothing.
-		   methods.discard = function(self, elem)
-		      if operator_in(elem, self) then
-			 self.remove(elem)
-		      end
-		   end
+        -- remove all elements of another set from this set.
+        methods.difference_update = function(self, ...)
+            local others = list {...}
+            for _, other_set in others do
+                for _, elem in other_set do
+                    if operator_in(elem, self) then
+                        self.remove(elem)
+                    end
+                end
+            end
+        end
 
-		   -- return the intersection of two sets as a new set.
-		   -- (i.e. all elements that are in both sets.)
-                   methods.intersection = function(self, ...)
-		      local inter_set = self.copy()
-		      
-		      local others = list {...}
-		      for _, other_set in others do
-			 inter_set.difference_update(inter_set.difference(other_set))
-		      end
+        -- remove an element from a set if it is a member.
+        -- if the element is not a member, do nothing.
+        methods.discard = function(self, elem)
+            if operator_in(elem, self) then
+                self.remove(elem)
+            end
+        end
 
-		      return inter_set
-		   end
+        -- return the intersection of two sets as a new set.
+        -- (i.e. all elements that are in both sets.)
+        methods.intersection = function(self, ...)
+            local inter_set = self.copy()
 
-		   -- update a set with the intersection of itself and another.
-                   methods.intersection_update = function(self, ...)
-		      local others = list {...}
-		      for _, other_set in others do
-			 self.difference_update(self.difference(other_set))
-		      end
-		   end
+            local others = list {...}
+            for _, other_set in others do
+                inter_set.difference_update(inter_set.difference(other_set))
+            end
+
+            return inter_set
+        end
+
+        -- update a set with the intersection of itself and another.
+        methods.intersection_update = function(self, ...)
+            local others = list {...}
+            for _, other_set in others do
+                self.difference_update(self.difference(other_set))
+            end
+        end
 
 
-		   -- return True if two sets have a null intersection.
-                   methods.isdisjoint = function(self, other)
-		      local inter_set = self.intersection(other)
-		      return len(inter_set) == 0
-		   end
+        -- return True if two sets have a null intersection.
+        methods.isdisjoint = function(self, other)
+            local inter_set = self.intersection(other)
+            return len(inter_set) == 0
+        end
 
-		   -- report whether another set contains this set.
-                   methods.issubset = function(self, other)
-		      local inter_set = self.intersection(other)
-		      return len(inter_set) == len(self)
-		   end
+        -- report whether another set contains this set.
+        methods.issubset = function(self, other)
+            local inter_set = self.intersection(other)
+            return len(inter_set) == len(self)
+        end
 
-		   -- report whether this set contains another set.
-                   methods.issuperset = function(self, other)
-		      local inter_set = self.intersection(other)
-		      return len(inter_set) == len(other)
-		   end
+        -- report whether this set contains another set.
+        methods.issuperset = function(self, other)
+            local inter_set = self.intersection(other)
+            return len(inter_set) == len(other)
+        end
 
-		   -- remove and return an arbitrary set element.
-		   -- raises KeyError if the set is empty.
-		   methods.pop = function(self)
-		      assert(len(self) ~= 0, "set is empty")
-		      local elem = nil
-		      for _, e in self do
-			 elem = e
-		      end
-		      self.remove(elem)
-		      return elem
-		   end
-		   
-		   -- remove an element from a set; it must be a member.
-		   -- if the element is not a member, raise a KeyError.
-		   methods.remove = function(self, elem)
-		      assert(operator_in(elem, self), "elem not in set")
-		      elem = _to_null(elem)
-		      self._data[elem] = nil
-		   end
+        -- remove and return an arbitrary set element.
+        -- raises KeyError if the set is empty.
+        methods.pop = function(self)
+            assert(len(self) ~= 0, "set is empty")
+            local elem = nil
+            for _, e in self do
+                elem = e
+            end
+            self.remove(elem)
+            return elem
+        end
 
-		   -- return the symmetric difference of two sets as a new set.
-		   -- (i.e. all elements that are in exactly one of the sets.)
-                   methods.symmetric_difference = function(self, other)
-		      local union_set = self.union(other)
-		      local inter_set = self.intersection(other)
-		      return union_set.difference(inter_set)
-                   end
+        -- remove an element from a set; it must be a member.
+        -- if the element is not a member, raise a KeyError.
+        methods.remove = function(self, elem)
+            assert(operator_in(elem, self), "elem not in set")
+            elem = _to_null(elem)
+            self._data[elem] = nil
+        end
 
-		   -- update a set with the symmetric difference of itself and another.
-                   methods.symmetric_difference_update = function(self, other)
-		      local inter_set = self.intersection(other)
-		      self.update(other)
-		      self.difference_update(inter_set)
-		   end
+        -- return the symmetric difference of two sets as a new set.
+        -- (i.e. all elements that are in exactly one of the sets.)
+        methods.symmetric_difference = function(self, other)
+            local union_set = self.union(other)
+            local inter_set = self.intersection(other)
+            return union_set.difference(inter_set)
+        end
 
-		   -- return the union of sets as a new set.
-		   -- (i.e. all elements that are in either set.)
-                   methods.union = function(self, ...)
-		      local union_set = self.copy()
+        -- update a set with the symmetric difference of itself and another.
+        methods.symmetric_difference_update = function(self, other)
+            local inter_set = self.intersection(other)
+            self.update(other)
+            self.difference_update(inter_set)
+        end
 
-		      local others = list {...}
-		      for _, other_set in others do
-			 for _, elem in other_set do
-			    union_set.add(elem)
-			 end
-		      end
+        -- return the union of sets as a new set.
+        -- (i.e. all elements that are in either set.)
+        methods.union = function(self, ...)
+            local union_set = self.copy()
 
-		      return union_set
-		   end
+            local others = list {...}
+            for _, other_set in others do
+                for _, elem in other_set do
+                    union_set.add(elem)
+                end
+            end
 
-		   -- Update a set with the union of itself and others.
-                   methods.update = function(self, ...)
-		      local others = list {...}
-		      for _, other_set in others do
-			 for _, elem in other_set do
-			    self.add(elem)
-			 end
-		      end
-		   end
-		   
-		   -- __iter__
-		   -- delegate to metatable __call
-		   methods.__iter__ = function(self)
-		      return self
-		   end
-		   
-                   local iterator_index = nil
+            return union_set
+        end
 
-                   setmetatable(result, {
-                                   __index = function(self, index)
-                                      if type(index) == "number" then
-					 error("'set' object does not support indexing")
-                                      end
+        -- Update a set with the union of itself and others.
+        methods.update = function(self, ...)
+            local others = list {...}
+            for _, other_set in others do
+                for _, elem in other_set do
+                    self.add(elem)
+                end
+            end
+        end
 
-                                      return function(...)
-					 return methods[index](self, ...)
-				      end
-                                   end,
-                                   __call = function(self, _, idx)
-                                      if idx == nil then
-                                         iterator_index = nil
-                                      end
+        -- __iter__
+        -- delegate to metatable __call
+        methods.__iter__ = function(self)
+            return self
+        end
 
-				      iterator_index, _ = g_real_next(self._data, iterator_index)
-				      
-                                      return iterator_index, _to_nil(iterator_index)
-                                   end,
-                   })
+        local iterator_index = nil
 
-                   return result
-                end,
+        setmetatable(result, {
+            __index = function(self, index)
+                if type(index) == "number" then
+                    error("'set' object does not support indexing")
+                end
+
+                return function(...)
+                    return methods[index](self, ...)
+                end
+            end,
+            __call = function(self, _, idx)
+                if idx == nil then
+                    iterator_index = nil
+                end
+
+                iterator_index, _ = g_real_next(self._data, iterator_index)
+
+                return iterator_index, _to_nil(iterator_index)
+            end,
+        })
+
+        return result
+    end,
 })
 
 
@@ -1571,134 +1572,134 @@ setmetatable(set, {
 -- build an immutable unordered collection of unique elements.
 local frozenset = {}
 setmetatable(frozenset, {
-                __call = function(_, t)
-                   local result = {}
+    __call = function(_, t)
+        local result = {}
 
-                   result._is_frozenset = true
-                   result._data = {}
+        result._is_frozenset = true
+        result._data = {}
 
-		   if t ~= nil then
-		      if t.__iter__ then
-			 -- iterable
-			 for _, v in t do
-			    result._data[_to_null(v)] = true
-			 end
-		      else
-			 -- no frozenset literal
-		      end
-		   else
-		      -- frozenset()
-		   end
+        if t ~= nil then
+            if t.__iter__ then
+                -- iterable
+                for _, v in t do
+                    result._data[_to_null(v)] = true
+                end
+            else
+            -- no frozenset literal
+            end
+        else
+        -- frozenset()
+        end
 
-                   local methods = {}
+        local methods = {}
 
-		   -- return a shallow copy of a frozenset.
-                   methods.copy = function(self)
-                      return self
-                   end
+        -- return a shallow copy of a frozenset.
+        methods.copy = function(self)
+            return self
+        end
 
-		   -- return the difference of two or more sets as a new set.
-		   -- (i.e. all elements that are in this set but not the others.)
-                   methods.difference = function(self, ...)
-		      local diff_set = set(self)
-		      
-		      local others = list {...}
-		      for _, other_set in others do
-			 for _, elem in other_set do
-			    if operator_in(elem, diff_set) then
-			       diff_set.remove(elem)
-			    end
-			 end
-		      end
+        -- return the difference of two or more sets as a new set.
+        -- (i.e. all elements that are in this set but not the others.)
+        methods.difference = function(self, ...)
+            local diff_set = set(self)
 
-		      return frozenset(diff_set)
-                   end
+            local others = list {...}
+            for _, other_set in others do
+                for _, elem in other_set do
+                    if operator_in(elem, diff_set) then
+                        diff_set.remove(elem)
+                    end
+                end
+            end
 
-		   -- return the intersection of two sets as a new set.
-		   -- (i.e. all elements that are in both sets.)
-                   methods.intersection = function(self, ...)
-		      local inter_set = set(self)
-		      
-		      local others = list {...}
-		      for _, other_set in others do
-			 inter_set.difference_update(inter_set.difference(other_set))
-		      end
+            return frozenset(diff_set)
+        end
 
-		      return frozenset(inter_set)
-		   end
+        -- return the intersection of two sets as a new set.
+        -- (i.e. all elements that are in both sets.)
+        methods.intersection = function(self, ...)
+            local inter_set = set(self)
 
-		   -- return True if two sets have a null intersection.
-                   methods.isdisjoint = function(self, other)
-		      local inter_set = self.intersection(other)
-		      return len(inter_set) == 0
-		   end
+            local others = list {...}
+            for _, other_set in others do
+                inter_set.difference_update(inter_set.difference(other_set))
+            end
 
-		   -- report whether another set contains this set.
-                   methods.issubset = function(self, other)
-		      local inter_set = self.intersection(other)
-		      return len(inter_set) == len(self)
-		   end
+            return frozenset(inter_set)
+        end
 
-		   -- report whether this set contains another set.
-                   methods.issuperset = function(self, other)
-		      local inter_set = self.intersection(other)
-		      return len(inter_set) == len(other)
-		   end
+        -- return True if two sets have a null intersection.
+        methods.isdisjoint = function(self, other)
+            local inter_set = self.intersection(other)
+            return len(inter_set) == 0
+        end
 
-		   -- return the symmetric difference of two sets as a new set.
-		   -- (i.e. all elements that are in exactly one of the sets.)
-                   methods.symmetric_difference = function(self, other)
-		      local union_set = self.union(other)
-		      local inter_set = self.intersection(other)
-		      return union_set.difference(inter_set)
-                   end
+        -- report whether another set contains this set.
+        methods.issubset = function(self, other)
+            local inter_set = self.intersection(other)
+            return len(inter_set) == len(self)
+        end
 
-		   -- return the union of sets as a new set.
-		   -- (i.e. all elements that are in either set.)
-                   methods.union = function(self, ...)
-		      local union_set = set(self)
+        -- report whether this set contains another set.
+        methods.issuperset = function(self, other)
+            local inter_set = self.intersection(other)
+            return len(inter_set) == len(other)
+        end
 
-		      local others = list {...}
-		      for _, other_set in others do
-			 for _, elem in other_set do
-			    union_set.add(elem)
-			 end
-		      end
+        -- return the symmetric difference of two sets as a new set.
+        -- (i.e. all elements that are in exactly one of the sets.)
+        methods.symmetric_difference = function(self, other)
+            local union_set = self.union(other)
+            local inter_set = self.intersection(other)
+            return union_set.difference(inter_set)
+        end
 
-		      return frozenset(union_set)
-		   end
-		   
-		   -- __iter__
-		   -- delegate to metatable __call
-		   methods.__iter__ = function(self)
-		      return self
-		   end
-		   
-                   local iterator_index = nil
+        -- return the union of sets as a new set.
+        -- (i.e. all elements that are in either set.)
+        methods.union = function(self, ...)
+            local union_set = set(self)
 
-                   setmetatable(result, {
-                                   __index = function(self, index)
-                                      if type(index) == "number" then
-					 error("'set' object does not support indexing")
-                                      end
+            local others = list {...}
+            for _, other_set in others do
+                for _, elem in other_set do
+                    union_set.add(elem)
+                end
+            end
 
-                                      return function(...)
-					 return methods[index](self, ...)
-				      end
-                                   end,
-                                   __call = function(self, _, idx)
-                                      if idx == nil then
-                                         iterator_index = nil
-                                      end
+            return frozenset(union_set)
+        end
 
-				      iterator_index, _ = g_real_next(result._data, iterator_index)
-				      
-                                      return iterator_index, _to_nil(iterator_index)
-                                   end,
-                   })
+        -- __iter__
+        -- delegate to metatable __call
+        methods.__iter__ = function(self)
+            return self
+        end
 
-                   return result
-                end,
+        local iterator_index = nil
+
+        setmetatable(result, {
+            __index = function(self, index)
+                if type(index) == "number" then
+                    error("'set' object does not support indexing")
+                end
+
+                return function(...)
+                    return methods[index](self, ...)
+                end
+            end,
+            __call = function(self, _, idx)
+                if idx == nil then
+                    iterator_index = nil
+                end
+
+                iterator_index, _ = g_real_next(result._data, iterator_index)
+
+                return iterator_index, _to_nil(iterator_index)
+            end,
+        })
+
+        return result
+    end,
 })
 
 
@@ -1706,34 +1707,34 @@ setmetatable(frozenset, {
 -- slice(start, stop[, step])
 -- create a slice object.  This is used for extended slicing (e.g. a[0:10:2]).
 local function slice(...)
-   local p, l = {...}, select('#', ...)
-   assert(l ~= 0, 'slice expected at least 1 arguments, got 0')
+    local p, l = {...}, select('#', ...)
+    assert(l ~= 0, 'slice expected at least 1 arguments, got 0')
 
-   local s = {}
-   s._is_slice = true
+    local s = {}
+    s._is_slice = true
 
-   if l == 1 then
-      s.start = nil
-      s.stop = p[1]
-      s.step = nil
-   elseif l == 2 then
-      s.start = p[1]
-      s.stop = p[2]
-      s.step = nil
-   else
-      s.start = p[1]
-      s.stop = p[2]
-      s.step = p[3]
-   end
-   
-   return s
+    if l == 1 then
+        s.start = nil
+        s.stop = p[1]
+        s.step = nil
+    elseif l == 2 then
+        s.start = p[1]
+        s.stop = p[2]
+        s.step = nil
+    else
+        s.start = p[1]
+        s.stop = p[2]
+        s.step = p[3]
+    end
+
+    return s
 end
 
 -- sorted(iterable, key=None, reverse=False) --> new sorted list
 local function sorted(iterable, key, reverse)
-   local l = list(iterable)
-   l.sort(key, reverse)
-   return l
+    local l = list(iterable)
+    l.sort(key, reverse)
+    return l
 end
 
 
@@ -1742,14 +1743,14 @@ end
 -- of parameter 'start' (which defaults to 0).  When the iterable is
 -- empty, return start.
 local function sum(iterable, start)
-   local start = start or 0
-   local s = 0
+    local start = start or 0
+    local s = 0
 
-   for i in iterable do
-      s = s + i
-   end
+    for i in iterable do
+        s = s + i
+    end
 
-   return s + start
+    return s + start
 end
 
 
@@ -1758,131 +1759,131 @@ end
 -- f the argument is a tuple, the return value is the same object.
 local tuple = {}
 setmetatable(tuple, {
-                __call = function(_, t)
-                   local result = {}
+    __call = function(_, t)
+        local result = {}
 
-                   result._is_tuple = true
-                   result._data = {}
-		   result._len = 0
+        result._is_tuple = true
+        result._data = {}
+        result._len = 0
 
-		   if t ~= nil then
-		      if t.__iter__ then
-			 -- tuple(iterable)
-			 local l = 0
-			 for _, v in t do
-			    l = l + 1
-			    result._data[l] = v
-			 end
-			 result._len = l
-		      else
-			 -- tuple literal
-			 for k, v in pairs(t) do
-			    l = l + 1
-			    result._data[k] = _to_nil(v)
-			 end
-			 result._len = l
-		      end
-		   else
-		      -- tuple()
-		   end
+        if t ~= nil then
+            if t.__iter__ then
+                -- tuple(iterable)
+                local l = 0
+                for _, v in t do
+                    l = l + 1
+                    result._data[l] = v
+                end
+                result._len = l
+            else
+                -- tuple literal
+                for k, v in pairs(t) do
+                    l = l + 1
+                    result._data[k] = _to_nil(v)
+                end
+                result._len = l
+            end
+        else
+        -- tuple()
+        end
 
-		   local py_to_lua_idx = function(i, size)
-		      if i >= 0 then
-			 i = i + 1
-			 if i > size then
-			    i = size
-			 end
-		      else
-			 i = i + size + 1
-			 if i < 1 then
-			    i = 1
-			 end
-		      end
-		      return i
-		   end
-		   
-                   
-                   local methods = {}
+        local py_to_lua_idx = function(i, size)
+            if i >= 0 then
+                i = i + 1
+                if i > size then
+                    i = size
+                end
+            else
+                i = i + size + 1
+                if i < 1 then
+                    i = 1
+                end
+            end
+            return i
+        end
 
-		   -- T.count(value) -> integer -- return number of occurrences of value
-                   methods.count = function(self, value)
-                      local cnt = 0
-		      for i = 1, self._len do
-			 local v = self._data[i]
-			 if v == value then
-			    cnt = cnt + 1
-			 end
-		      end
-                      return cnt
-                   end
 
-		   -- T.index(value, [start, [stop]]) -> integer -- return first index of value.
-		   -- raises ValueError if the value is not present.
-		   -- 相当于在 T[start:stop] 中寻找 value
-		   -- 当 start stop 超过开始/结束的界限，算作界限本身
-                   methods.index = function(self, value, start, stop)
-		      local size = self._len
-		      
-		      if not start then
-			 start = 1
-		      else
-			 start = py_to_lua_idx(start, size)
-		      end
+        local methods = {}
 
-		      if not stop then
-			 stop = size
-		      else
-			 stop = py_to_lua_idx(stop, size)
-		      end
+        -- T.count(value) -> integer -- return number of occurrences of value
+        methods.count = function(self, value)
+            local cnt = 0
+            for i = 1, self._len do
+                local v = self._data[i]
+                if v == value then
+                    cnt = cnt + 1
+                end
+            end
+            return cnt
+        end
 
-		      if start >= stop then
-			 return nil
-		      end
-		      
-                      for i = start, stop-1, 1 do
-                         if result._data[i] == value then
-                            return i - 1
-                         end
-                      end
-                   end
+        -- T.index(value, [start, [stop]]) -> integer -- return first index of value.
+        -- raises ValueError if the value is not present.
+        -- 相当于在 T[start:stop] 中寻找 value
+        -- 当 start stop 超过开始/结束的界限，算作界限本身
+        methods.index = function(self, value, start, stop)
+            local size = self._len
 
-		   -- __iter__
-		   -- delegate to metatable __call
-		   methods.__iter__ = function(self)
-		      return self
-		   end
-		   
-                   local iterator_index = 0
+            if not start then
+                start = 1
+            else
+                start = py_to_lua_idx(start, size)
+            end
 
-                   setmetatable(result, {
-                                   __index = function(self, index)
-                                      if type(index) == "number" then
-					 index = py_to_lua_idx(index, self._len)
-                                         return rawget(self._data, index)
-                                      end
+            if not stop then
+                stop = size
+            else
+                stop = py_to_lua_idx(stop, size)
+            end
 
-                                      return function(...)
-					 return methods[index](self, ...)
-				      end
-                                   end,
-                                   __call = function(self, _, idx)
-                                      if idx == nil then
-                                         iterator_index = 0
-                                      end
+            if start >= stop then
+                return nil
+            end
 
-				      iterator_index = iterator_index + 1
-                                      local v = result._data[iterator_index]
+            for i = start, stop-1, 1 do
+                if result._data[i] == value then
+                    return i - 1
+                end
+            end
+        end
 
-				      if iterator_index > self._len then
-					 return nil, nil
-				      else
-					 return iterator_index, v
-				      end
-                                   end,
-                   })
+        -- __iter__
+        -- delegate to metatable __call
+        methods.__iter__ = function(self)
+            return self
+        end
 
-                   return result
-                end,
+        local iterator_index = 0
+
+        setmetatable(result, {
+            __index = function(self, index)
+                if type(index) == "number" then
+                    index = py_to_lua_idx(index, self._len)
+                    return rawget(self._data, index)
+                end
+
+                return function(...)
+                    return methods[index](self, ...)
+                end
+            end,
+            __call = function(self, _, idx)
+                if idx == nil then
+                    iterator_index = 0
+                end
+
+                iterator_index = iterator_index + 1
+                local v = result._data[iterator_index]
+
+                if iterator_index > self._len then
+                    return nil, nil
+                else
+                    return iterator_index, v
+                end
+            end,
+        })
+
+        return result
+    end,
 })
 
 
@@ -1900,63 +1901,63 @@ setmetatable(tuple, {
 --]]
 
 local function class(class_init, bases, class_name)
-   bases = bases or {}
+    bases = bases or {}
 
-   local c = {}
-   
-   for _, base in ipairs(bases) do
-      for k, v in pairs(base) do
-	 c[k] = v
-      end
-   end
-   
-   c.__name__ = class_name
-   c.__base__ = bases
-   -- todo: __mro__ ?
-   -- https://www.python.org/download/releases/2.3/mro/
-   
-   c = class_init(c)
-   
-   local mt = getmetatable(c) or {}
-   mt.__call = function(_, ...)
-      local obj = {}
-      
-      setmetatable(obj, {
-		      __index = function(tbl, idx)
-			 local attr = c[idx]
-			 if type(attr) == "function" then
-			    return function(...)
-			       -- attr is function, obj is self
-			       return c[idx](obj, ...) 
-			    end
-			 end
+    local c = {}
 
-			 -- attr is attribute
-			 return attr
-		      end,
-      })
+    for _, base in ipairs(bases) do
+        for k, v in pairs(base) do
+            c[k] = v
+        end
+    end
 
-      obj.__class__ = c
-      
-      -- search in the metatable
-      if type(obj.__init__) == "function" then
-	 obj.__init__(...)
-      end
-      
-      return obj
-   end
-   
-   setmetatable(c, mt)
-   
-   return c
+    c.__name__ = class_name
+    c.__base__ = bases
+    -- todo: __mro__ ?
+    -- https://www.python.org/download/releases/2.3/mro/
+
+    c = class_init(c)
+
+    local mt = getmetatable(c) or {}
+    mt.__call = function(_, ...)
+        local obj = {}
+
+        setmetatable(obj, {
+            __index = function(tbl, idx)
+                local attr = c[idx]
+                if type(attr) == "function" then
+                    return function(...)
+                        -- attr is function, obj is self
+                        return c[idx](obj, ...)
+                    end
+                end
+
+                -- attr is attribute
+                return attr
+            end,
+        })
+
+        obj.__class__ = c
+
+        -- search in the metatable
+        if type(obj.__init__) == "function" then
+            obj.__init__(...)
+        end
+
+        return obj
+    end
+
+    setmetatable(c, mt)
+
+    return c
 end
 
 
 local function isinstance(obj, cls)
-   local c = obj.__class__
+    local c = obj.__class__
 
-   -- if cls in c's parent classes
-   -- base on __mro__
+    -- if cls in c's parent classes
+    -- base on __mro__
 end
 
 local function issubclass()
@@ -1989,82 +1990,82 @@ end
 -- method continues until the shortest iterable in the argument sequence
 -- is exhausted and then it raises StopIteration.
 local function zip(iter1, ...)
-   local iters = list {...}
-   iters.insert(0, iter1)
+    local iters = list {...}
+    iters.insert(0, iter1)
 
-   local lists = list {}
-   local iters_num = len(iters)
-   local min_iter_len = math.huge
+    local lists = list {}
+    local iters_num = len(iters)
+    local min_iter_len = math.huge
 
-   for _, it in iters do
-      lists.append(list(it))
-      local l = len(list(it))
-      if l < min_iter_len then
-	 min_iter_len = l
-      end
-   end
+    for _, it in iters do
+        lists.append(list(it))
+        local l = len(list(it))
+        if l < min_iter_len then
+            min_iter_len = l
+        end
+    end
 
-   local res = list {}
-   for _, nth in range(min_iter_len) do
-      local item = list {}
-      for _, ith in range(iters_num) do
-	 item.append(lists[ith][nth])
-      end
-      res.append(item)
-   end
+    local res = list {}
+    for _, nth in range(min_iter_len) do
+        local item = list {}
+        for _, ith in range(iters_num) do
+            item.append(lists[ith][nth])
+        end
+        res.append(item)
+    end
 
-   return res
+    return res
 end
 
 
 return {
-   ["bit"] = bit,
-   ["unpack"] = unpack,
-   ["next"] = next,
-   ["abs"] = abs,
-   ["all"] = all,
-   ["any"] = any,
-   ["ascii"] = ascii,
-   ["bin"] = bin,
-   ["bool"] = bool,
-   ["callable"] = callable,
-   ["divmod"] = divmod,
-   ["enumerate"] = enumerate,
-   ["filter"] = filter,
-   ["float"] = float,
-   ["hex"] = hex,
-   ["int"] = int,
-   ["len"] = len,
-   ["_to_null"] = _to_null,
-   ["_to_nil"] = _to_nil,
-   ["list"] = list,
-   ["coroutine_wrap"] = coroutine_wrap,
-   ["meta_generator"] = meta_generator,
-   ["map"] = map,
-   ["oct"] = oct,
-   ["max"] = max,
-   ["memoryview"] = memoryview,
-   ["min"] = min,
-   ["range"] = range,
-   ["reduce"] = reduce,
-   ["reversed"] = reversed,
-   ["dict"] = dict,
-   ["staticmethod"] = staticmethod,
-   ["operator_in"] = operator_in,
-   ["operator_is"] = operator_is,
-   ["object"] = object,
-   ["pow"] = pow,
---   ["print"] = print,  -- using npl codeblock print function
-   ["round"] = round,
-   ["set"] = set,
-   ["frozenset"] = frozenset,
-   ["slice"] = slice,
-   ["sorted"] = sorted,
-   ["sum"] = sum,
-   ["tuple"] = tuple,
-   ["class"] = class,
-   ["isinstance"] = isinstance,
-   ["issubclass"] = issubclass,
-   ["super"] = super,
-   ["zip"] = zip,
+    ["bit"] = bit,
+    ["unpack"] = unpack,
+    ["next"] = next,
+    ["abs"] = abs,
+    ["all"] = all,
+    ["any"] = any,
+    ["ascii"] = ascii,
+    ["bin"] = bin,
+    ["bool"] = bool,
+    ["callable"] = callable,
+    ["divmod"] = divmod,
+    ["enumerate"] = enumerate,
+    ["filter"] = filter,
+    ["float"] = float,
+    ["hex"] = hex,
+    ["int"] = int,
+    ["len"] = len,
+    ["_to_null"] = _to_null,
+    ["_to_nil"] = _to_nil,
+    ["list"] = list,
+    ["coroutine_wrap"] = coroutine_wrap,
+    ["meta_generator"] = meta_generator,
+    ["map"] = map,
+    ["oct"] = oct,
+    ["max"] = max,
+    ["memoryview"] = memoryview,
+    ["min"] = min,
+    ["range"] = range,
+    ["reduce"] = reduce,
+    ["reversed"] = reversed,
+    ["dict"] = dict,
+    ["staticmethod"] = staticmethod,
+    ["operator_in"] = operator_in,
+    ["operator_is"] = operator_is,
+    ["object"] = object,
+    ["pow"] = pow,
+    --   ["print"] = print,  -- using npl codeblock print function
+    ["round"] = round,
+    ["set"] = set,
+    ["frozenset"] = frozenset,
+    ["slice"] = slice,
+    ["sorted"] = sorted,
+    ["sum"] = sum,
+    ["tuple"] = tuple,
+    ["class"] = class,
+    ["isinstance"] = isinstance,
+    ["issubclass"] = issubclass,
+    ["super"] = super,
+    ["zip"] = zip,
 }

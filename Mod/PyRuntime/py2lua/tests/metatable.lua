@@ -10,6 +10,8 @@ print('a' + 1)
 
 print(1 + 'a')
 
-print(1 + 'a' + 1)
+local s = 'a'
 
-print(1 + 1)
+print(s + 1)
+
+print(1 + s)

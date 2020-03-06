@@ -74,9 +74,6 @@ class handler(BaseHTTPRequestHandler):
 
 
     def _transplie(self):
-        global last_visit_time
-        last_visit_time = timer()
-
         content_length = int(self.headers['Content-Length'])
         content = self.rfile.read(content_length)
 
@@ -134,7 +131,7 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--addr', type=str, default='127.0.0.1', help='serve listen address')
     parser.add_argument('-p', '--port', type=int, default=8006, help='serve listen port')
-    parser.add_argument('-m', '--max_alive_interval', type=int, default=1, help='serve will auto exit after being idle in these minutes')
+    parser.add_argument('-m', '--max_alive_interval', type=int, default=30, help='serve will auto exit after being idle in these seconds')
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='if show verbose information')
     parser.set_defaults(verbose=False)
     return parser
@@ -152,7 +149,7 @@ if __name__ == '__main__':
     addr = args.addr
     port = args.port
     verbose = args.verbose
-    max_alive_interval = timedelta(minutes=args.max_alive_interval)
+    max_alive_interval = timedelta(seconds=args.max_alive_interval)
 
     monitor = RepeatTimer(check_interval, check)
     monitor.start()

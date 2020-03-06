@@ -109,11 +109,7 @@ function Transpiler:transpile(pycode)
 end
 
 function Transpiler:installMethods(codeAPIs, pyAPIs)
-    for func_name, func in pairs(pyAPIs) do
-        if(type(func_name) == "string" and type(func) == "function") then
-			codeAPIs[func_name] = function(...)
-				return func(...);
-			end
-		end
+    for name, api in pairs(pyAPIs) do
+		codeAPIs[name] = api
 	end
 end

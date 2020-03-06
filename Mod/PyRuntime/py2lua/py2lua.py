@@ -15,7 +15,7 @@ verbose = None
 monitor = None
 max_alive_interval = None
 
-check_interval = 5 # seconds
+check_interval = 1 # seconds
 last_visit_time = timer()
 
 def check():
@@ -46,9 +46,10 @@ class handler(BaseHTTPRequestHandler):
         "luacode": error_msg/luacode
     }
 
-    request /exit
+    request /keepalive
     response
-    {       
+    {   
+        "alive": true    
     }
     """
     def do_POST(self):
@@ -62,8 +63,8 @@ class handler(BaseHTTPRequestHandler):
 
         if post_path == '/transpile':
             self._transplie()
-        elif post_path == '/exit':
-            self._exit()
+        elif post_path == '/keepalive':
+            self._keepalive()
         else:
             pass
 
@@ -105,9 +106,9 @@ class handler(BaseHTTPRequestHandler):
             print('=' * 40)
 
 
-    def _exit(self):
+    def _keepalive(self):
         res = {
-            "exit": True
+            "alive": True
         }
         res = json.dumps(res)
 
@@ -117,7 +118,6 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(res.encode('utf-8'))
 
-        exit_server()
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -134,7 +134,7 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--addr', type=str, default='127.0.0.1', help='serve listen address')
     parser.add_argument('-p', '--port', type=int, default=8006, help='serve listen port')
-    parser.add_argument('-m', '--max_alive_interval', type=int, default=20, help='serve will auto exit after being idle in these minutes')
+    parser.add_argument('-m', '--max_alive_interval', type=int, default=1, help='serve will auto exit after being idle in these minutes')
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', help='if show verbose information')
     parser.set_defaults(verbose=False)
     return parser

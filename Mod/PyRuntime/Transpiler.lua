@@ -31,7 +31,7 @@ local py2lua_exe = app_root .. "plugins/py2lua.exe"
 local defautl_ip = '127.0.0.1'
 local defautl_port = 8006
 local port = defautl_port
-local max_alive_interval = 20 -- minutes
+local max_alive_interval = 1 -- minutes
 local loaded = false
 
 
@@ -54,7 +54,32 @@ function Transpiler:start()
     loaded = true
 
     LOG.std(nil, "info", "PyRuntime", "start py2lua service at " .. defautl_ip .. ":" .. tostring(port))
+
+    self.alive_timer = commonlib.Timer:new({callbackFunc = function(timer)
+        self:keepalive()
+    end})
+
+    -- start the timer after 0 milliseconds, and signal every 1000 millisecond
+    self.alive_timer:Change(0, 1000)
 end
+
+function Transpiler:keepalive()
+    if not loaded then
+        self:start()
+        return
+    end
+
+    local url = string.format('http://%s:%d/keepalive', defautl_ip, port)
+    local err, msg, data = http_post({
+            url=url,
+            method = 'POST',
+            json = true,
+            form = {
+            }
+        }
+    )
+end
+
 
 function Transpiler:transpile(pycode)
     if not loaded then
@@ -82,30 +107,6 @@ function Transpiler:transpile(pycode)
 
     return error, luacode
 end
-
-function Transpiler:terminate()
-    if not loaded then
-        LOG.std(nil, "info", "PyRuntime", "py2lua service is not running")
-        return
-    end
-
-    local url = string.format('http://%s:%d/exit', defautl_ip, port)
-    local err, msg, data = http_post({
-            url=url,
-            method = 'POST',
-            json = true,
-            form = {}
-        }
-    )
-
-    if err == 200 then
-        loaded = false
-        LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' succeed.')
-    else
-        LOG.std(nil, "info", "PyRuntime", "terminate py2lua service at " .. defautl_ip .. ":" .. tostring(port) .. ' FAILED!')
-    end        
-end
-
 
 function Transpiler:installMethods(codeAPIs, pyAPIs)
     for func_name, func in pairs(pyAPIs) do

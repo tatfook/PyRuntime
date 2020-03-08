@@ -1,4 +1,4 @@
-# py2lua
+# py2npl
 
 A python project for transpiling pycode to luacode and can be distributed as a single executable file to run.
 
@@ -21,8 +21,8 @@ A python project for transpiling pycode to luacode and can be distributed as a s
 ### run
 
 ```
-$ python py2lua.py --help
-usage: py2lua.py [-h] [--addr ADDR] [--port PORT] [--verbose]
+$ python py2npl.py --help
+usage: py2npl.py [-h] [--addr ADDR] [--port PORT] [--verbose]
 
 optional arguments:
   -h, --help   show this help message and exit
@@ -31,10 +31,10 @@ optional arguments:
   --verbose    if show verbose information
 ```
 
-py2lua 采用了 C/S 结构来提升并发性，直接运行相当于启动了服务器
+py2npl 采用了 C/S 结构来提升并发性，直接运行相当于启动了服务器
 
 ```
-$ python py2lua.py
+$ python py2npl.py
 start server at 127.0.0.1:8006, use <Ctrl-C> to stop
 ```
 
@@ -83,6 +83,6 @@ python 语言和 lua 语言在单纯的语法结构上有很大程度的类似�
 $ python distribute.py
 ```
 
-可以在 `dist/` 目录下，找到生成的 `py2lua` 可执行文件。
+可以在 `dist/` 目录下，找到生成的 `py2npl` 可执行文件。
 
 

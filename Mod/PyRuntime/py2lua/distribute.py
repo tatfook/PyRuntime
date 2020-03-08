@@ -1,6 +1,6 @@
 import PyInstaller.__main__
 
-pack_name = 'py2lua'
+pack_name = 'py2npl'
 pack_file = '%s.py' % pack_name
 version_file = 'exe_version.txt'
 

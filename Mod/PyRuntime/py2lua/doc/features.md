@@ -1,6 +1,6 @@
 # supported features
 
-py2lua 支持的 python 语言以 3.4 为基准，支持大部分语言功能。
+py2npl 支持的 python 语言以 3.4 为基准，支持大部分语言功能。
 转换为 lua 语言 5.1 版本。
 
 ## transpile 的核心

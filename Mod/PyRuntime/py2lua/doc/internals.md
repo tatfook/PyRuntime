@@ -1,4 +1,4 @@
-# py2lua internals
+# py2npl internals
 
 how to do transpiling work?
 

@@ -26,7 +26,7 @@ local Transpiler = NPL.export()
 
 local http_post = System.os.GetUrl
 local app_root = ParaIO.GetCurDirectory(0)
-local py2lua_exe = app_root .. "plugins/py2lua.exe"
+local py2npl_exe = app_root .. "plugins/py2npl.exe"
 
 local default_ip = '127.0.0.1'
 local defautl_port = 8006
@@ -37,12 +37,12 @@ local loaded = false
 
 function Transpiler:start()
     if loaded then
-        -- LOG.std(nil, "info", "PyRuntime", "py2lua service has been loaded at " .. default_ip .. ":" .. tostring(port))
+        -- LOG.std(nil, "info", "PyRuntime", "py2npl service has been loaded at " .. default_ip .. ":" .. tostring(port))
         return
     end
 
-    if not ParaIO.DoesFileExist(py2lua_exe) then
-        LOG.std(nil, "info", "PyRuntime", "py2lua.exe not exists in plugins/ directory, please update to latest version.")
+    if not ParaIO.DoesFileExist(py2npl_exe) then
+        LOG.std(nil, "info", "PyRuntime", "py2npl.exe not exists in plugins/ directory, please update to latest version.")
         return
     end
 
@@ -50,17 +50,17 @@ function Transpiler:start()
     while(not ParaGlobal.IsPortAvailable(default_ip, port)) do
         nTryCount = nTryCount + 1;
         if (nTryCount > 10) then
-            LOG.std(nil, "error", "PyRuntime", "py2lua.exe can not find an available http port")
+            LOG.std(nil, "error", "PyRuntime", "py2npl.exe can not find an available http port")
             break;
         else
             port = port + 1
         end
     end
 
-    ParaGlobal.Execute(py2lua_exe, {'--addr', default_ip, '--port', tostring(port), '--max_alive_interval', tostring(max_alive_interval), '--verbose'})
+    ParaGlobal.Execute(py2npl_exe, {'--addr', default_ip, '--port', tostring(port), '--max_alive_interval', tostring(max_alive_interval), '--verbose'})
     loaded = true
 
-    LOG.std(nil, "info", "PyRuntime", "start py2lua service at " .. default_ip .. ":" .. tostring(port))
+    LOG.std(nil, "info", "PyRuntime", "start py2npl service at " .. default_ip .. ":" .. tostring(port))
 
     self.alive_timer = commonlib.Timer:new({callbackFunc = function(timer)
         self:keepalive()
@@ -106,7 +106,7 @@ function Transpiler:transpile(pycode)
     
     if data == nil then
         LOG.std(nil, "info", "PyRuntime", "transpile error happens")
-        return true, "can't fetch data from py2lua service"
+        return true, "can't fetch data from py2npl service"
     end
 
     local error = data['error']

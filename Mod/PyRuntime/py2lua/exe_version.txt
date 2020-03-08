@@ -30,7 +30,7 @@ VSVersionInfo(
       StringTable(
         u'080404b0',
         [StringStruct(u'CompanyName', u'Paracraft'),
-        StringStruct(u'FileDescription', u'py2lua'),
+        StringStruct(u'FileDescription', u'py2npl'),
         StringStruct(u'FileVersion', u'0.0.1.0'),
         StringStruct(u'LegalCopyright', u'Copyright (C) 1999-2019 Paracraft. All Rights Reserved'),
         StringStruct(u'ProductName', u'Paracraft'),

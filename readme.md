@@ -4,7 +4,7 @@
 
 ## 支持语言版本
 
-针对 python 3.4 版本，对于 feature 的支持可参考列表 https://github.com/tatfook/PyRuntime/blob/master/Mod/PyRuntime/py2lua/doc/features.md
+针对 python 3.4 版本，对于 feature 的支持可参考列表 https://github.com/tatfook/PyRuntime/blob/master/Mod/PyRuntime/py2npl/doc/features.md
 
 ## usage
 
@@ -40,5 +40,5 @@ transpiler:terminate()
 transpile 的底层服务是一个 http 服务器，使用 python 代码编写，最终打包成为 exe。
 这样 npl 就可以开启/关闭服务器，并且使用 http 接口来获取 transpile 服务。
 
-至于具体的 transpiler 实现，参考 [py2lua](./Mod/PyRuntime/py2lua/README.md)
+至于具体的 transpiler 实现，参考 [py2npl](./Mod/PyRuntime/py2npl/README.md)
 

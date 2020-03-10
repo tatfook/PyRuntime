@@ -52,7 +52,7 @@ local f = list(filter(nil, l))
 assert((len(f) == 5))
 assert((f[_to_null(0)] == 1))
 assert((f[_to_null(4)] == 5))
-f = list(filter(function(n) return ((math.fmod(n, 2)) == 0) end, l))
+f = list(filter(function(n) return ((mod_operator(n, 2)) == 0) end, l))
 assert((len(f) == 3))
 assert((f[_to_null(0)] == 0))
 assert((f[_to_null(1)] == 2))
@@ -123,13 +123,16 @@ assert((oct(1000) == "0o1750"))
 assert((oct(10000) == "0o23420"))
 assert((pow(2, 10) == 1024))
 assert((pow(2, 9, 3) == 2))
-local a = 10
-local b = 20
-local c = "message"
+--[[
+a = 10
+b = 20
+c = 'message'
+
 print()
 print(a)
 print(a, b)
 print(a, b, c)
+]]
 l = (function() local result = list {} for _, i in range(10) do result.append(i) end return result end)()
 assert((len(l) == 10))
 assert((l[_to_null(0)] == 0))

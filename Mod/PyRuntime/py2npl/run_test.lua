@@ -11,6 +11,13 @@ if polyfill == nil then
 end
 
 local env = polyfill()
+
+local codeblock_env = {
+   ["print"] = print,
+}
+
+env._set_codeblock_env(codeblock_env)
+
 setmetatable(env, {__index = _G})
 setfenv(code, env)
 code()

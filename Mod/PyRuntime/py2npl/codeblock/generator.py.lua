@@ -6,7 +6,7 @@ for _, n in b do
     i = (i + 1)
 end
 a = list {_to_null(0, 1, 2, 3)}
-b = coroutine_wrap(function() for _, i in a do coroutine.yield(((math.fmod(i, 2)) == 1) and i or 0) end end)
+b = coroutine_wrap(function() for _, i in a do coroutine.yield(((mod_operator(i, 2)) == 1) and i or 0) end end)
 i = 0
 for _, n in b do
     if (i == 0) then
@@ -24,7 +24,7 @@ for _, n in b do
     i = (i + 1)
 end
 a = list {_to_null(0, 1, 2, 3)}
-b = coroutine_wrap(function() for _, i in a do if ((math.fmod(i, 2)) == 1) then coroutine.yield(i) end end end)
+b = coroutine_wrap(function() for _, i in a do if ((mod_operator(i, 2)) == 1) then coroutine.yield(i) end end end)
 i = 0
 for _, n in b do
     if (i == 0) then

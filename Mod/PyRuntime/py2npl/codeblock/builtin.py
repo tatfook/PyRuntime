@@ -300,6 +300,7 @@ assert pow(2, 9, 3) == 2
 
 ## print, can't tested by assert
 
+'''
 a = 10
 b = 20
 c = 'message'
@@ -308,6 +309,7 @@ print()
 print(a)
 print(a, b)
 print(a, b, c)
+'''
 
 ## property
 

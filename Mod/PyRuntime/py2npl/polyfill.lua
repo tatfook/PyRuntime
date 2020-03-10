@@ -2020,6 +2020,14 @@ local function zip(iter1, ...)
 end
 
 
+local function mod_operator(left, ...)
+   if type(left) == "string" then
+      return string.format(left, ...)
+   else
+      return math.fmod(left, ...)
+   end
+end
+
 
 -- print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
 -- Prints the values to a stream, or to sys.stdout by default.
@@ -2091,5 +2099,6 @@ return {
     ["issubclass"] = issubclass,
     ["super"] = super,
     ["zip"] = zip,
+    ["mod_operator"] = mod_operator,
     ["_set_codeblock_env"] = _set_codeblock_env,
 }

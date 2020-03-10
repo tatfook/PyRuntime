@@ -5,13 +5,13 @@ assert(((a[_to_null(1)] + 1) == b[_to_null(1)]))
 assert(((a[_to_null(2)] + 1) == b[_to_null(2)]))
 assert(((a[_to_null(3)] + 1) == b[_to_null(3)]))
 a = list {_to_null(0, 1, 2, 3)}
-b = (function() local result = list {} for _, i in a do result.append(((math.fmod(i, 2)) == 1) and i or 0) end return result end)()
+b = (function() local result = list {} for _, i in a do result.append(((mod_operator(i, 2)) == 1) and i or 0) end return result end)()
 assert((b[_to_null(0)] == 0))
 assert((b[_to_null(1)] == 1))
 assert((b[_to_null(2)] == 0))
 assert((b[_to_null(3)] == 3))
 a = list {_to_null(0, 1, 2, 3)}
-b = (function() local result = list {} for _, i in a do if ((math.fmod(i, 2)) == 1) then result.append(i) end end return result end)()
+b = (function() local result = list {} for _, i in a do if ((mod_operator(i, 2)) == 1) then result.append(i) end end return result end)()
 assert((b[_to_null(0)] == 1))
 assert((b[_to_null(1)] == 3))
 a = list {_to_null(0, 1)}

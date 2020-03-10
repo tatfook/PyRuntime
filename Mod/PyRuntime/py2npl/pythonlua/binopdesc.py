@@ -6,9 +6,6 @@ _DEFAULT_FORMAT = "{left} {operation} {right}"
 class BinaryOperationDesc:
     """
     Binary operation description
-
-    TODO:
-    - bit ops
     """
 
     OPERATION = {
@@ -30,7 +27,7 @@ class BinaryOperationDesc:
         },
         ast.Mod: {
             "value": "",
-            "format": "math.fmod({left}, {right})",
+            "format": "mod_operator({left}, {right})",
         },
         ast.Pow: {
             "value": "",

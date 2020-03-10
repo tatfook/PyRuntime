@@ -10,6 +10,7 @@ NPL.load("Mod/PyRuntime/main.lua");
 ]]
 
 local PyRuntime = commonlib.inherit(commonlib.gettable("Mod.ModBase"), commonlib.gettable("Mod.PyRuntime"))
+local transpiler = NPL.load("Mod/PyRuntime/Transpiler.lua")
 
 function PyRuntime:ctor()
 end
@@ -59,6 +60,8 @@ end
 -- called when a new world is loaded. 
 function PyRuntime:OnWorldLoad()
 	LOG.std(nil, "info", "PyRuntime", "world load")
+
+	transpiler:start()
 end
 
 -- called when a world is unloaded. 

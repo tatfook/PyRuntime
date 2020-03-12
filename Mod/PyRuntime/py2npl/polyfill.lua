@@ -2043,7 +2043,8 @@ end
 --]]
 
 local function input(...)
-    return codeblock_env['cb_ask'](...)
+    local i = codeblock_env['cb_ask'](...)
+    return tostring(i)
 end
 
 

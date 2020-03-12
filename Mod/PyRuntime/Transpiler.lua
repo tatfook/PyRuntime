@@ -37,7 +37,6 @@ local loaded = false
 
 function Transpiler:start()
     if loaded then
-        -- LOG.std(nil, "info", "PyRuntime", "py2npl service has been loaded at " .. default_ip .. ":" .. tostring(port))
         return
     end
 
@@ -51,7 +50,7 @@ function Transpiler:start()
         nTryCount = nTryCount + 1;
         if (nTryCount > 10) then
             LOG.std(nil, "error", "PyRuntime", "py2npl.exe can not find an available http port")
-            break;
+            return
         else
             port = port + 1
         end
@@ -61,6 +60,17 @@ function Transpiler:start()
     loaded = true
 
     LOG.std(nil, "info", "PyRuntime", "start py2npl service at " .. default_ip .. ":" .. tostring(port))
+
+    local nDetectCount = 0
+    while not self:keepalive() do
+        ParaEngine.Sleep(0.1) -- 100 ms
+        nDetectCount = nDetectCount + 1
+
+        if nDetectCount > 10 then
+            LOG.std(nil, "error", "PyRuntime", "py2npl.exe do not start for some reason.")
+            return
+        end
+    end
 
     self.alive_timer = commonlib.Timer:new({callbackFunc = function(timer)
         self:keepalive()
@@ -85,6 +95,8 @@ function Transpiler:keepalive()
             }
         }
     )
+
+    return err == 200
 end
 
 

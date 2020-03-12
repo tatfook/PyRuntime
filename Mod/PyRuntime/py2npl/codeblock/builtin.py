@@ -212,6 +212,12 @@ assert l[0] == 1
 assert l[1] == 2
 assert l[2] == 3
 
+### not support tuple expr
+#l = list((1, 2, 3))
+#assert len(l) == 3
+#assert l[0] == 1
+#assert l[1] == 2
+#assert l[2] == 3
 
 ## locals
 ### not support

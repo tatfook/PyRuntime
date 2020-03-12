@@ -292,8 +292,8 @@ tuple 是 list 有只读形式，但是在 python 中 tuple 的存在广泛，�
 |:-:|:-:|:-:|:-:|
 |tuple字面量|`t = (1, 2, 3)`|`[local] t = tuple {1, 2, 3}`|:x:|
 |tuple函数|`t = tuple([1, 2, 3])`|`[local] t = tuple([1, 2, 3])`|:heavy_check_mark:|
-|`count`|`l.count(4)`|`l.count(4)`|:heavy_check_mark:|
-|`index`|`l.index(4)`|`l.index(4)`|:heavy_check_mark:|
+|`count`|`t.count(4)`|`t.count(4)`|:heavy_check_mark:|
+|`index`|`t.index(4)`|`t.index(4)`|:heavy_check_mark:|
 
 |python示例代码|lua转换代码|
 |:-:|:-:|

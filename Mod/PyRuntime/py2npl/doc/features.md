@@ -292,18 +292,8 @@ tuple 是 list 有只读形式，但是在 python 中 tuple 的存在广泛，�
 |:-:|:-:|:-:|:-:|
 |tuple字面量|`t = (1, 2, 3)`|`[local] t = tuple {1, 2, 3}`|:x:|
 |tuple函数|`t = tuple([1, 2, 3])`|`[local] t = tuple([1, 2, 3])`|:heavy_check_mark:|
-|`append`|`l.append(4)`|`l.append(4)`|:heavy_check_mark:|
-|`clear`|`l.clear()`|`l.clear()`|:heavy_check_mark:|
-|`copy`|`l.copy()`|`l.copy()`|:heavy_check_mark:|
 |`count`|`l.count(4)`|`l.count(4)`|:heavy_check_mark:|
-|`extend`|`l.extend([5, 6, 7])`|`l.extend(list {5, 6, 7})`|:heavy_check_mark:|
 |`index`|`l.index(4)`|`l.index(4)`|:heavy_check_mark:|
-|`insert`|`l.insert(0, -1)`|`l.insert(0, -1)`|:heavy_check_mark:|
-|`pop`|`l.pop()`|`l.pop()`|:heavy_check_mark:|
-|`remove`|`l.remove(-1)`|`l.remove(-1)`|:heavy_check_mark:|
-|`reverse`|`l.reverse()`|`l.reverse()`|:heavy_check_mark:|
-|`sort`|`l.sort()`|`l.sort()`|:heavy_check_mark:，因为当前函数不支持键值参数，所以 key 和 reverse 参数无法传递，有待调整|
-
 
 |python示例代码|lua转换代码|
 |:-:|:-:|

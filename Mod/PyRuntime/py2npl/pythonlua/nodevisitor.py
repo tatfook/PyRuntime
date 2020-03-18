@@ -530,10 +530,40 @@ class NodeVisitor(ast.NodeVisitor):
         self.emit(line.format(**values))
 
     def visit_Import(self, node):
-        pass
+        last_scope = self.scope.last()
+        
+        line = 'local {asname} = _require("{name}")'
+        values = {"asname": "", "name": ""}
+
+        for alias in node.names:
+            if alias.asname is None:
+                values["name"] = alias.name
+                values["asname"] = values["name"]
+            else:
+                values["name"] = alias.name
+                values["asname"] = alias.asname
+
+            last_scope['locals'].append(values["asname"])
+            self.emit(line.format(**values))
 
     def visit_ImportFrom(self, node):
-        pass
+        last_scope = self.scope.last()
+
+        line = 'local {asname} = _require("{module}").{name}'
+        values = {"asname": "", "module": "", "name": ""}
+
+        values["module"] = node.module
+        
+        for alias in node.names:
+            if alias.asname is None:
+                values["name"] = alias.name
+                values["asname"] = values["name"]
+            else:
+                values["name"] = alias.name
+                values["asname"] = alias.asname
+
+            last_scope['locals'].append(values["asname"])
+            self.emit(line.format(**values))
 
     def visit_Index(self, node):
         """Visit index"""

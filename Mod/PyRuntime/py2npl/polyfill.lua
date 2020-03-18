@@ -2047,7 +2047,21 @@ local function input(...)
     return tostring(i)
 end
 
+local stdlib = {
+   json = {
+      loads = function() end,
+      dumps = function() end,
+   }
+}
 
+local function _require(m)
+   if stdlib[m] ~= nil then
+      return stdlib[m]
+   else
+      print("<warning> doesn't support module for now ->", m)
+      return {}
+   end
+end
 
 return {
     ["bit"] = bit,
@@ -2102,4 +2116,5 @@ return {
     ["zip"] = zip,
     ["mod_operator"] = mod_operator,
     ["_set_codeblock_env"] = _set_codeblock_env,
+    ["_require"] = _require,
 }

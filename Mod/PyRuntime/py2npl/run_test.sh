@@ -11,7 +11,7 @@ pyfile_path=$1
 function test_pyfile()
 {
     pyfile=$1
-    pyluafile=$pyfile.lua
+    pyluafile=${pyfile%.py}.lua
     printf "test python file $pyfile ... "
 
     $PYTHON $pylua $pyfile > $pyluafile

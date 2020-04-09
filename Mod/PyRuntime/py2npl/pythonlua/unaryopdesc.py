@@ -1,13 +1,8 @@
-"""Unary operation description"""
 import ast
-
 
 _DEFAULT_FORMAT = "{operation}{value}"
 
-
 class UnaryOperationDesc:
-    """Unary operation description"""
-
     OPERATION = {
         ast.USub: {
             "value": "-",
@@ -19,7 +14,7 @@ class UnaryOperationDesc:
         },
         ast.Not: {
             "value": "not",
-            "format": "not {value}",
+            "format": "not bool({{}}, {value})",
         },
         ast.Invert: {
             "value": "~",

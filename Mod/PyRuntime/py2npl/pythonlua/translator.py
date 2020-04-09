@@ -1,25 +1,14 @@
-"""Python to lua translator class"""
-
 import ast
-import os
 
 from .nodevisitor import NodeVisitor
 
 class Translator:
-    """translator"""
     def __init__(self):
         self.output = []
 
     def translate(self, pycode):
-        """
-        Translate python code to lua code
-
-        if error, return True and error_msg
-        if not, return False and lua_code
-        """
         error = False
 
-        # if python syntax correct
         try:
             py_ast_tree = ast.parse(pycode)
         except SyntaxError as e:
@@ -29,7 +18,6 @@ class Translator:
 
         visitor = NodeVisitor()
 
-        # if exist node type we don't support
         try:
             visitor.visit(py_ast_tree)
         except RuntimeError as e:
@@ -38,14 +26,21 @@ class Translator:
             return error, error_msg
 
         self.output = visitor.output
-        return error, self.to_code()
+
+        # export module symbols
+        symbols = []
+        symbols.append('')
+        symbols.append('return {')
+        for symbol in visitor.scope.first()['locals']:
+            symbols.append('    %s = %s,' % (symbol, symbol))
+        symbols.append('}')
+        
+        return error, self.to_code() + '\n'.join(symbols)
 
     def to_code(self, code=None, indent=0):
-        """Create a lua code from the compiler output"""
         code = code if code is not None else self.output
 
         def add_indentation(line):
-            """Add indentation to the given line"""
             indentation_width = 4
             indentation_space = " "
 

@@ -1,7 +1,6 @@
 from copy import deepcopy
 
 class Scope:
-    """code context and scope"""
     def __init__(self):
         """
         level: 0 and above
@@ -19,8 +18,16 @@ class Scope:
             "nonlocals": [],
             "coroutine": False,
         }
+
+        global_scope = deepcopy(self.scope)
+        global_scope['kind'] = 'global'
         
-        self.stack = [deepcopy(self.scope)]
+        self.stack = [global_scope]
+
+    def first(self):
+        assert len(self.stack) > 0, "There is no scope object in the stack!"
+        return self.stack[0]
+        
 
     def last(self, kinds=[]):
         if len(kinds) == 0:

@@ -1,14 +1,13 @@
 local codeblock_env = {}
 
+-- imported code block functions: 
+-- TODO: this implementation is wrong. we should install locally per code block. 
+local codeblock_funcs = {"print", "ask"}
 local function _set_codeblock_env(env)
-    for func_name, func in pairs(env) do
-        if(type(func_name) == "string" and type(func) == "function") then
-            codeblock_env['cb_' .. func_name] = func
-        end
+    for _, func_name in ipairs(codeblock_funcs) do
+        codeblock_env['cb_' .. func_name] = env[func_name]
     end
 end
-
-
 
 local max_bit_length = 32
 

@@ -62,7 +62,7 @@ class handler(BaseHTTPRequestHandler):
             start = timer()
 
         if post_path == '/transpile':
-            self._transplie()
+            self._transpile()
         elif post_path == '/keepalive':
             self._keepalive()
         else:
@@ -73,7 +73,7 @@ class handler(BaseHTTPRequestHandler):
             print(threading.currentThread().getName(), 'time consume:', timedelta(seconds=end-start))
 
 
-    def _transplie(self):
+    def _transpile(self):
         content_length = int(self.headers['Content-Length'])
         content = self.rfile.read(content_length)
 

@@ -730,7 +730,7 @@ class NodeVisitor(ast.NodeVisitor):
         if self.context.last()["docstring"]:
             self.emit('--[[{}]]'.format(node.s))
         else:
-            self.emit('"{}"'.format(node.s))
+            self.emit('"{}"'.format(node.s.replace('"', '\\"')))
 
     def visit_Subscript(self, node):
         """

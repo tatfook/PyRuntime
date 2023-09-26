@@ -15,7 +15,7 @@ A python project for transpiling pycode to luacode and can be distributed as a s
 ### prerequisite
 
 - 安装 python 3.4.4 32bit（对于老式的平台如 XP，无法运行 64bit 程序）
-- `pip install pyinstaller==3.4` （更新版本的 pyinstaller 脱离了对 py 3.4 的支持）
+- `python.exe -m pip install pyinstaller==3.4` （更新版本的 pyinstaller 脱离了对 py 3.4 的支持）
 - （可选，仅供运行测试）安装 lua5.1 (use `choco install lua51` for windows)
 
 ### run
@@ -80,7 +80,9 @@ python 语言和 lua 语言在单纯的语法结构上有很大程度的类似�
 通过 pyinstaller，将项目代码打包为不依赖平台环境的可执行文件
 
 ```
-$ python distribute.py
+pip install pyinstaller
+pip install --upgrade pyinstaller
+python distribute.py
 ```
 
 可以在 `dist/` 目录下，找到生成的 `py2npl` 可执行文件。
